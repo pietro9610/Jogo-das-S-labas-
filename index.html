@@ -1,0 +1,256 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Jogo das Sílabas Mágicas</title>
+    <style>
+        :root {
+            --primary: #FF6B6B;
+            --secondary: #4ECDC4;
+            --accent: #FFE66D;
+            --bg: #F7FFF7;
+        }
+
+        body {
+            font-family: 'Comic Sans MS', cursive, sans-serif;
+            background-color: var(--bg);
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+            margin: 0;
+            overflow: hidden;
+        }
+
+        #game-container {
+            background: white;
+            padding: 2rem;
+            border-radius: 30px;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.1);
+            text-align: center;
+            width: 90%;
+            max-width: 500px;
+            border: 5px solid var(--secondary);
+        }
+
+        .emoji-display {
+            font-size: 80px;
+            margin-bottom: 10px;
+            display: block;
+        }
+
+        .word-display {
+            font-size: 40px;
+            letter-spacing: 5px;
+            margin-bottom: 30px;
+            font-weight: bold;
+            color: #333;
+            text-transform: uppercase;
+        }
+
+        .missing-syllable {
+            color: var(--primary);
+            border-bottom: 4px dashed var(--primary);
+            padding: 0 5px;
+            min-width: 40px;
+            display: inline-block;
+        }
+
+        .options-container {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 15px;
+        }
+
+        button {
+            padding: 15px;
+            font-size: 24px;
+            cursor: pointer;
+            border: none;
+            border-radius: 15px;
+            background-color: var(--secondary);
+            color: white;
+            transition: transform 0.2s, background-color 0.2s;
+            font-family: inherit;
+            font-weight: bold;
+            box-shadow: 0 4px #36b1a8;
+        }
+
+        button:active {
+            transform: translateY(4px);
+            box-shadow: none;
+        }
+
+        button.correct { background-color: #77dd77; }
+        button.wrong { background-color: #ff6961; }
+
+        .audio-btn {
+            background-color: var(--accent);
+            color: #333;
+            font-size: 18px;
+            padding: 10px 20px;
+            margin-bottom: 20px;
+            box-shadow: 0 4px #d4be4d;
+        }
+
+        #message {
+            height: 30px;
+            margin-top: 20px;
+            font-size: 20px;
+            font-weight: bold;
+        }
+
+        .score {
+            position: absolute;
+            top: 20px;
+            right: 20px;
+            font-size: 24px;
+            background: white;
+            padding: 10px;
+            border-radius: 10px;
+            border: 2px solid var(--secondary);
+        }
+    </style>
+</head>
+<body>
+
+<div class="score">⭐ <span id="points">0</span></div>
+
+<div id="game-container">
+    <span id="emoji" class="emoji-display">🏠</span>
+    
+    <button class="audio-btn" onclick="ouvirPalavra()">🔊 OUVIR PALAVRA</button>
+    
+    <div id="word" class="word-display">
+        CA<span class="missing-syllable">?</span>
+    </div>
+
+    <div id="options" class="options-container">
+        </div>
+
+    <div id="message"></div>
+</div>
+
+<script>
+    // Banco de palavras: palavra dividida, emoji e nível
+    const listaPalavras = [
+        { silabas: ["BO", "LA"], emoji: "⚽", nome: "bola" },
+        { silabas: ["CA", "SA"], emoji: "🏠", nome: "casa" },
+        { silabas: ["GA", "TO"], emoji: "🐱", nome: "gato" },
+        { silabas: ["PA", "TO"], emoji: "🦆", nome: "pato" },
+        { silabas: ["SA", "PO"], emoji: "🐸", nome: "sapo" },
+        { silabas: ["MA", "LA"], emoji: "🧳", nome: "mala" },
+        { silabas: ["VA", "CA"], emoji: "🐮", nome: "vaca" },
+        { silabas: ["DA", "DO"], emoji: "🎲", nome: "dado" },
+        { silabas: ["PI", "PO", "CA"], emoji: "🍿", nome: "pipoca" },
+        { silabas: ["CA", "VA", "LO"], emoji: "🐎", nome: "cavalo" },
+        { silabas: ["JA", "NE", "LA"], emoji: "🪟", nome: "janela" },
+        { silabas: ["MA", "CA", "CO"], emoji: "🐒", nome: "macaco" },
+        { silabas: ["PA", "NE", "LA"], emoji: "🍳", nome: "panela" },
+        { silabas: ["BO", "NE", "CA"], emoji: "🪆", nome: "boneca" },
+        { silabas: ["GI", "RA", "FA"], emoji: "🦒", nome: "girafa" },
+        { silabas: ["JA", "CA", "RÉ"], emoji: "🐊", nome: "jacaré" },
+        { silabas: ["SA", "PA", "TO"], emoji: "👞", nome: "sapato" },
+        { silabas: ["TO", "MA", "TE"], emoji: "🍅", nome: "tomate" },
+        { silabas: ["BU", "LE"], emoji: "☕", nome: "bule" },
+        { silabas: ["FO", "CA"], emoji: "🦭", nome: "foca" }
+    ];
+
+    let palavraAtual = {};
+    let silabaOcultaIndex = 0;
+    let pontos = 0;
+
+    const outrasSilabas = ["PA", "TE", "RI", "BO", "LU", "MA", "VA", "CO", "DE", "NA", "SA", "LO"];
+
+    function iniciarJogo() {
+        // Limpar mensagens e botões
+        document.getElementById('message').innerText = "";
+        document.getElementById('options').innerHTML = "";
+
+        // Escolher palavra aleatória
+        palavraAtual = listaPalavras[Math.floor(Math.random() * listaPalavras.length)];
+        
+        // Escolher qual sílaba esconder
+        silabaOcultaIndex = Math.floor(Math.random() * palavraAtual.silabas.length);
+
+        // Exibir emoji
+        document.getElementById('emoji').innerText = palavraAtual.emoji;
+
+        // Exibir palavra com lacuna
+        let displayHTML = "";
+        palavraAtual.silabas.forEach((s, index) => {
+            if (index === silabaOcultaIndex) {
+                displayHTML += '<span class="missing-syllable">?</span>';
+            } else {
+                displayHTML += s;
+            }
+        });
+        document.getElementById('word').innerHTML = displayHTML;
+
+        gerarOpcoes(palavraAtual.silabas[silabaOcultaIndex]);
+    }
+
+    function gerarOpcoes(correta) {
+        let opcoes = [correta];
+        
+        // Adicionar 3 opções erradas aleatórias
+        while (opcoes.length < 4) {
+            let rand = outrasSilabas[Math.floor(Math.random() * outrasSilabas.length)];
+            if (!opcoes.includes(rand)) opcoes.push(rand);
+        }
+
+        // Embaralhar opções
+        opcoes.sort(() => Math.random() - 0.5);
+
+        const container = document.getElementById('options');
+        opcoes.forEach(opt => {
+            const btn = document.createElement('button');
+            btn.innerText = opt;
+            btn.onclick = () => verificarResposta(opt, btn);
+            container.appendChild(btn);
+        });
+    }
+
+    function verificarResposta(escolhida, botao) {
+        const correta = palavraAtual.silabas[silabaOcultaIndex];
+        
+        if (escolhida === correta) {
+            botao.classList.add('correct');
+            document.getElementById('message').innerText = "🎉 Parabéns! Você acertou!";
+            document.getElementById('message').style.color = "#77dd77";
+            falar("Muito bem! " + palavraAtual.nome);
+            
+            // Atualizar palavra na tela
+            document.getElementById('word').innerText = palavraAtual.silabas.join("");
+            
+            pontos += 10;
+            document.getElementById('points').innerText = pontos;
+
+            setTimeout(iniciarJogo, 2000);
+        } else {
+            botao.classList.add('wrong');
+            document.getElementById('message').innerText = "Tente outra vez! 😊";
+            document.getElementById('message').style.color = "#ff6961";
+            falar("Quase! Tente de novo.");
+            setTimeout(() => botao.classList.remove('wrong'), 500);
+        }
+    }
+
+    function ouvirPalavra() {
+        falar("Complete a palavra: " + palavraAtual.nome);
+    }
+
+    function falar(texto) {
+        const utterance = new SpeechSynthesisUtterance(texto);
+        utterance.lang = 'pt-BR';
+        utterance.rate = 0.9;
+        window.speechSynthesis.speak(utterance);
+    }
+
+    // Começar o jogo pela primeira vez
+    iniciarJogo();
+</script>
+
+</body>
+</html>
