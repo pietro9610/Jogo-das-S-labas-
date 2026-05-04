@@ -1,0 +1,162 @@
+/* Importando uma fonte lúdica e moderna */
+@import url('https://fonts.googleapis.com/css2?family=Fredoka:wght@400;600&display=swap');
+
+:root {
+    --azul: #4db8ff;
+    --amarelo: #ffce00;
+    --rosa: #ff85a1;
+    --fundo: #f0f9ff;
+    --branco: #ffffff;
+    --texto: #2d3436;
+}
+
+* {
+    box-sizing: border-box;
+    margin: 0;
+    padding: 0;
+}
+
+body {
+    background-color: var(--fundo);
+    font-family: 'Fredoka', sans-serif;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    min-height: 100vh;
+    overflow-x: hidden;
+}
+
+#game-wrapper {
+    background-color: var(--branco);
+    width: 95%;
+    max-width: 600px;
+    padding: 30px;
+    border-radius: 40px;
+    box-shadow: 0 15px 0 rgba(0, 0, 0, 0.05);
+    text-align: center;
+}
+
+/* 1. Container da Imagem */
+#imagem-pergunta {
+    background-color: #f7f7f7;
+    border-radius: 30px;
+    padding: 20px;
+    margin-bottom: 30px;
+    border: 4px dashed #ddd;
+}
+
+#display-imagem {
+    max-width: 100%;
+    height: 200px;
+    object-fit: contain;
+    border-radius: 20px;
+}
+
+/* 2. Área de Destino (Dropzone) */
+#zona-destino {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    gap: 15px;
+    margin-bottom: 40px;
+    font-size: 4rem;
+    font-weight: 600;
+    color: var(--texto);
+    text-transform: uppercase;
+}
+
+#slot-vazio {
+    width: 100px;
+    height: 100px;
+    border: 5px dashed var(--azul);
+    border-radius: 20px;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    background-color: #e6f7ff;
+    color: var(--azul);
+    transition: all 0.3s ease;
+}
+
+#slot-vazio.drag-over {
+    background-color: var(--amarelo);
+    transform: scale(1.1);
+    border-style: solid;
+}
+
+/* 3. Botões de Sílaba (Efeito Chiclete/3D) */
+#opcoes-silabas {
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    gap: 20px;
+}
+
+.btn-silaba {
+    cursor: grab;
+    padding: 20px;
+    font-size: 2rem;
+    font-weight: 600;
+    font-family: 'Fredoka', sans-serif;
+    border: none;
+    border-radius: 25px;
+    background-color: var(--azul);
+    color: white;
+    text-transform: uppercase;
+    
+    /* Efeito 3D */
+    box-shadow: 0 8px 0 #3a8ec4, inset 0 -4px 6px rgba(0,0,0,0.2);
+    transition: all 0.1s ease;
+    user-select: none;
+    touch-action: none;
+}
+
+/* Cores variadas para os botões */
+.btn-silaba:nth-child(2) { background-color: var(--amarelo); box-shadow: 0 8px 0 #d4ad00, inset 0 -4px 6px rgba(0,0,0,0.2); }
+.btn-silaba:nth-child(3) { background-color: var(--rosa); box-shadow: 0 8px 0 #d65d7a, inset 0 -4px 6px rgba(0,0,0,0.2); }
+.btn-silaba:nth-child(4) { background-color: #a29bfe; box-shadow: 0 8px 0 #6c5ce7, inset 0 -4px 6px rgba(0,0,0,0.2); }
+
+.btn-silaba:hover {
+    transform: translateY(-2px);
+    filter: brightness(1.1);
+}
+
+.btn-silaba:active {
+    transform: translateY(4px);
+    box-shadow: 0 4px 0 #3a8ec4;
+}
+
+/* Estado enquanto arrasta */
+.btn-silaba.dragging {
+    opacity: 0.5;
+    transform: scale(0.9);
+}
+
+/* Animação de Erro (Shake) */
+.shake {
+    animation: shake 0.5s cubic-bezier(.36,.07,.19,.97) both;
+}
+
+@keyframes shake {
+    10%, 90% { transform: translate3d(-1px, 0, 0); }
+    20%, 80% { transform: translate3d(2px, 0, 0); }
+    30%, 50%, 70% { transform: translate3d(-4px, 0, 0); }
+    40%, 60% { transform: translate3d(4px, 0, 0); }
+}
+
+/* Feedback Visual (Emoji) */
+#feedback-visual {
+    position: fixed;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    font-size: 8rem;
+    pointer-events: none;
+    z-index: 100;
+}
+
+/* Responsividade para telas menores */
+@media (max-width: 480px) {
+    #zona-destino { font-size: 2.5rem; }
+    #slot-vazio { width: 70px; height: 70px; }
+    .btn-silaba { font-size: 1.5rem; padding: 15px; }
+}
