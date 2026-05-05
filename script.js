@@ -60,3 +60,215 @@ const bancoDePalavras = [
     { palavra: "LIXO", imagem: "img/lixo.png", audioPalavra: "audio/palavras/lixo.mp3", silabaCorreta: "LI", audioSilaba: "audio/silabas/li.mp3", opcoes: ["LA", "LE", "LI"] },
     { palavra: "MOTO", imagem: "img/moto.png", audioPalavra: "audio/palavras/moto.mp3", silabaCorreta: "MO", audioSilaba: "audio/silabas/mo.mp3", opcoes: ["MA", "ME", "MO"] }
 ];
+
+// ==========================================
+// VARIÁVEIS DE CONTROLE DO JOGO
+// ==========================================
+let faseAtual = 0;
+let palavraSorteada;
+let bancoEmbaralhado = [];
+
+// Áudios de feedback do sistema (certifique-se de ter esses arquivos na pasta)
+const somAcerto = new Audio("audio/sistema/acerto.mp3");
+const somErro = new Audio("audio/sistema/erro.mp3");
+
+// ==========================================
+// FUNÇÃO PARA INICIAR E EMBARALHAR
+// ==========================================
+function iniciarJogo() {
+    // Embaralha as 60 palavras para o jogo não ser sempre igual
+    bancoEmbaralhado = [...bancoDePalavras].sort(() => Math.random() - 0.5);
+    faseAtual = 0;
+    carregarFase();
+}
+
+// ==========================================
+// CARREGAR A FASE ATUAL
+// ==========================================
+function carregarFase() {
+    if (faseAtual >= bancoEmbaralhado.length) {
+        alert("🎉 Parabéns! Você completou todas as palavras!");
+        faseAtual = 0; // Reinicia o jogo
+        iniciarJogo();
+        return;
+    }
+
+    palavraSorteada = bancoEmbaralhado[faseAtual];
+
+    // Atualiza a Imagem
+    const imgElement = document.getElementById("imagem-pergunta");
+    if (imgElement) imgElement.src = palavraSorteada.imagem;
+
+    // Toca a palavra automaticamente (opcional)
+    tocarPalavra();
+
+    // Configura o botão de ouvir a palavra novamente
+    const btnOuvir = document.getElementById("btn-ouvir");
+    if (btnOuvir) {
+        btnOuvir.onclick = tocarPalavra;
+    }
+
+    // Limpa o alvo de Drop
+    const alvoDrop = document.getElementById("alvo-drop");
+    alvoDrop.innerHTML = "?";
+    alvoDrop.classList.remove("acerto");
+
+    // Gera os botões de sílabas dinamicamente
+    gerarOpcoes();
+}
+
+// Função para tocar o áudio da palavra completa
+function tocarPalavra() {
+    const audio = new Audio(palavraSorteada.audioPalavra);
+    audio.play();
+}
+
+// ==========================================
+// GERAR AS SÍLABAS ARRASTÁVEIS
+// ==========================================
+function gerarOpcoes() {
+    const container = document.getElementById("container-opcoes");
+    container.innerHTML = ""; // Limpa opções anteriores
+
+    // Embaralha as 3 opções para a posição certa não ser sempre a mesma
+    let opcoesEmbaralhadas = [...palavraSorteada.opcoes].sort(() => Math.random() - 0.5);
+
+    opcoesEmbaralhadas.forEach(silaba => {
+        const div = document.createElement("div");
+        div.innerText = silaba;
+        div.classList.add("opcao-silaba");
+        
+        // Habilita Drag and Drop para PC
+        div.draggable = true;
+        div.addEventListener("dragstart", handleDragStart);
+        
+        // Habilita Touch para Celular
+        div.addEventListener("touchstart", handleTouchStart, { passive: false });
+        div.addEventListener("touchmove", handleTouchMove, { passive: false });
+        div.addEventListener("touchend", handleTouchEnd);
+
+        // Toca o som da sílaba ao clicar/tocar
+        div.addEventListener("click", () => {
+            const audioSilaba = new Audio(`audio/silabas/${silaba.toLowerCase()}.mp3`);
+            audioSilaba.play();
+        });
+
+        container.appendChild(div);
+    });
+
+    configurarAlvoDrop();
+}
+
+// ==========================================
+// LÓGICA DE ARRASTAR (MOUSE - COMPUTADOR)
+// ==========================================
+function handleDragStart(e) {
+    e.dataTransfer.setData("text/plain", e.target.innerText);
+}
+
+function configurarAlvoDrop() {
+    const alvo = document.getElementById("alvo-drop");
+
+    alvo.addEventListener("dragover", (e) => {
+        e.preventDefault(); // Necessário para permitir o drop
+        alvo.classList.add("hover");
+    });
+
+    alvo.addEventListener("dragleave", () => {
+        alvo.classList.remove("hover");
+    });
+
+    alvo.addEventListener("drop", (e) => {
+        e.preventDefault();
+        alvo.classList.remove("hover");
+        const silabaSoltada = e.dataTransfer.getData("text/plain");
+        verificarResposta(silabaSoltada);
+    });
+}
+
+// ==========================================
+// LÓGICA DE TOQUE (TOUCH - CELULAR/TABLET)
+// ==========================================
+let elementoEmMovimento = null;
+let posOriginal = { x: 0, y: 0 };
+
+function handleTouchStart(e) {
+    elementoEmMovimento = e.target;
+    const rect = elementoEmMovimento.getBoundingClientRect();
+    posOriginal = { x: rect.left, y: rect.top };
+    
+    elementoEmMovimento.style.position = "absolute";
+    elementoEmMovimento.style.zIndex = 1000;
+}
+
+function handleTouchMove(e) {
+    if (!elementoEmMovimento) return;
+    e.preventDefault(); // Impede a tela de rolar enquanto arrasta
+    
+    const touch = e.touches[0];
+    elementoEmMovimento.style.left = touch.pageX - (elementoEmMovimento.offsetWidth / 2) + "px";
+    elementoEmMovimento.style.top = touch.pageY - (elementoEmMovimento.offsetHeight / 2) + "px";
+}
+
+function handleTouchEnd(e) {
+    if (!elementoEmMovimento) return;
+
+    // Esconde o elemento temporariamente para ver o que tem embaixo do dedo
+    elementoEmMovimento.style.display = "none";
+    const touch = e.changedTouches[0];
+    const elementoAbaixo = document.elementFromPoint(touch.clientX, touch.clientY);
+    elementoEmMovimento.style.display = "flex"; // Mostra de novo
+
+    // Verifica se soltou em cima do alvo
+    if (elementoAbaixo && (elementoAbaixo.id === "alvo-drop" || elementoAbaixo.closest("#alvo-drop"))) {
+        verificarResposta(elementoEmMovimento.innerText);
+    } else {
+        // Volta para a posição original se soltou fora
+        elementoEmMovimento.style.position = "static";
+    }
+
+    elementoEmMovimento = null;
+}
+
+// ==========================================
+// VERIFICAÇÃO DE ACERTO OU ERRO
+// ==========================================
+function verificarResposta(silaba) {
+    const alvo = document.getElementById("alvo-drop");
+
+    if (silaba === palavraSorteada.silabaCorreta) {
+        // ACERTOU
+        somAcerto.play();
+        alvo.innerText = silaba;
+        alvo.classList.add("acerto");
+        
+        // Efeito de Confetes (Chama a biblioteca canvas-confetti)
+        if (typeof confetti === "function") {
+            confetti({
+                particleCount: 100,
+                spread: 70,
+                origin: { y: 0.6 }
+            });
+        }
+
+        // Aguarda 2 segundos e vai para a próxima fase
+        setTimeout(() => {
+            faseAtual++;
+            carregarFase();
+        }, 2000);
+
+    } else {
+        // ERROU
+        somErro.play();
+        alvo.classList.add("erro");
+        
+        // Treme a tela (Feedback visual)
+        setTimeout(() => alvo.classList.remove("erro"), 500);
+
+        // Se estiver no celular, as opções voltam ao normal
+        gerarOpcoes(); 
+    }
+}
+
+// Inicia o jogo quando a página carrega
+window.onload = iniciarJogo;
