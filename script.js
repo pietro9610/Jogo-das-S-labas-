@@ -1,119 +1,62 @@
-// 1. Banco de Dados das Palavras
-// Complete a lista seguindo este padrão exato
-let bancoDePalavras = [
-    { palavra: 'BOLA', img: 'img/bola.jpg', correta: 'BO', silabas: ['BA', 'BE', 'BO', 'BU'], audioSilaba: 'audio/silabas/bo_aberto.mp3', audioPalavra: 'audio/palavras/bola.mp3' },
-    { palavra: 'BOLO', img: 'img/bolo.jpg', correta: 'BO', silabas: ['BO', 'CO', 'DO', 'FO'], audioSilaba: 'audio/silabas/bo_fechado.mp3', audioPalavra: 'audio/palavras/bolo.mp3' },
-    { palavra: 'BOTA', img: 'img/bota.jpg', correta: 'BO', silabas: ['BO', 'BA', 'CA', 'TA'], audioSilaba: 'audio/silabas/bo_aberto.mp3', audioPalavra: 'audio/palavras/bota.mp3' },
-    { palavra: 'BULE', img: 'img/bule.jpg', correta: 'BU', silabas: ['BU', 'BA', 'BE', 'BI'], audioSilaba: 'audio/silabas/bu.mp3', audioPalavra: 'audio/palavras/bule.mp3' },
-    // ... Adicione as outras 56 palavras aqui seguindo o mesmo formato
+const bancoDePalavras = [
+    { palavra: "BEBÊ", imagem: "img/bebe.png", audioPalavra: "audio/palavras/bebe.mp3", silabaCorreta: "BE", audioSilaba: "audio/silabas/be.mp3", opcoes: ["BA", "BE", "BO"] },
+    { palavra: "PATO", imagem: "img/pato.png", audioPalavra: "audio/palavras/pato.mp3", silabaCorreta: "PA", audioSilaba: "audio/silabas/pa.mp3", opcoes: ["PA", "PO", "PU"] },
+    { palavra: "MACACO", imagem: "img/macaco.png", audioPalavra: "audio/palavras/macaco.mp3", silabaCorreta: "MA", audioSilaba: "audio/silabas/ma.mp3", opcoes: ["ME", "MA", "MO"] },
+    { palavra: "CASA", imagem: "img/casa.png", audioPalavra: "audio/palavras/casa.mp3", silabaCorreta: "CA", audioSilaba: "audio/silabas/ca.mp3", opcoes: ["CO", "CA", "CU"] },
+    { palavra: "PIPOCA", imagem: "img/pipoca.png", audioPalavra: "audio/palavras/pipoca.mp3", silabaCorreta: "PI", audioSilaba: "audio/silabas/pi.mp3", opcoes: ["PA", "PI", "PO"] },
+    { palavra: "BANANA", imagem: "img/banana.png", audioPalavra: "audio/palavras/banana.mp3", silabaCorreta: "BA", audioSilaba: "audio/silabas/ba.mp3", opcoes: ["BO", "BA", "BE"] },
+    { palavra: "GELO", imagem: "img/gelo.png", audioPalavra: "audio/palavras/gelo.mp3", silabaCorreta: "GE", audioSilaba: "audio/silabas/ge.mp3", opcoes: ["GA", "GE", "GO"] },
+    { palavra: "BOLA", imagem: "img/bola.png", audioPalavra: "audio/palavras/bola.mp3", silabaCorreta: "BO", audioSilaba: "audio/silabas/bo.mp3", opcoes: ["BA", "BO", "BU"] },
+    { palavra: "TOMATE", imagem: "img/tomate.png", audioPalavra: "audio/palavras/tomate.mp3", silabaCorreta: "TO", audioSilaba: "audio/silabas/to.mp3", opcoes: ["TA", "TE", "TO"] },
+    { palavra: "DADO", imagem: "img/dado.png", audioPalavra: "audio/palavras/dado.mp3", silabaCorreta: "DA", audioSilaba: "audio/silabas/da.mp3", opcoes: ["DA", "DE", "DO"] },
+    { palavra: "SAPATO", imagem: "img/sapato.png", audioPalavra: "audio/palavras/sapato.mp3", silabaCorreta: "SA", audioSilaba: "audio/silabas/sa.mp3", opcoes: ["SE", "SA", "SO"] },
+    { palavra: "NAVE", imagem: "img/nave.png", audioPalavra: "audio/palavras/nave.mp3", silabaCorreta: "NA", audioSilaba: "audio/silabas/na.mp3", opcoes: ["NA", "NE", "NO"] },
+    { palavra: "GATO", imagem: "img/gato.png", audioPalavra: "audio/palavras/gato.mp3", silabaCorreta: "GA", audioSilaba: "audio/silabas/ga.mp3", opcoes: ["GA", "GO", "GU"] },
+    { palavra: "CAVALO", imagem: "img/cavalo.png", audioPalavra: "audio/palavras/cavalo.mp3", silabaCorreta: "CA", audioSilaba: "audio/silabas/ca.mp3", opcoes: ["CA", "CO", "CU"] },
+    { palavra: "MALA", imagem: "img/mala.png", audioPalavra: "audio/palavras/mala.mp3", silabaCorreta: "MA", audioSilaba: "audio/silabas/ma.mp3", opcoes: ["MA", "ME", "MI"] },
+    { palavra: "BONECA", imagem: "img/boneca.png", audioPalavra: "audio/palavras/boneca.mp3", silabaCorreta: "BO", audioSilaba: "audio/silabas/bo.mp3", opcoes: ["BA", "BO", "BE"] },
+    { palavra: "MAPA", imagem: "img/mapa.png", audioPalavra: "audio/palavras/mapa.mp3", silabaCorreta: "MA", audioSilaba: "audio/silabas/ma.mp3", opcoes: ["MA", "MO", "MU"] },
+    { palavra: "CANETA", imagem: "img/caneta.png", audioPalavra: "audio/palavras/caneta.mp3", silabaCorreta: "CA", audioSilaba: "audio/silabas/ca.mp3", opcoes: ["CA", "CO", "CU"] },
+    { palavra: "RATO", imagem: "img/rato.png", audioPalavra: "audio/palavras/rato.mp3", silabaCorreta: "RA", audioSilaba: "audio/silabas/ra.mp3", opcoes: ["RA", "RE", "RO"] },
+    { palavra: "SACOLA", imagem: "img/sacola.png", audioPalavra: "audio/palavras/sacola.mp3", silabaCorreta: "SA", audioSilaba: "audio/silabas/sa.mp3", opcoes: ["SA", "SE", "SO"] },
+    { palavra: "BULE", imagem: "img/bule.png", audioPalavra: "audio/palavras/bule.mp3", silabaCorreta: "BU", audioSilaba: "audio/silabas/bu.mp3", opcoes: ["BA", "BE", "BU"] },
+    { palavra: "JABUTI", imagem: "img/jabuti.png", audioPalavra: "audio/palavras/jabuti.mp3", silabaCorreta: "JA", audioSilaba: "audio/silabas/ja.mp3", opcoes: ["JA", "JE", "JO"] },
+    { palavra: "PIPA", imagem: "img/pipa.png", audioPalavra: "audio/palavras/pipa.mp3", silabaCorreta: "PI", audioSilaba: "audio/silabas/pi.mp3", opcoes: ["PA", "PI", "PO"] },
+    { palavra: "SALADA", imagem: "img/salada.png", audioPalavra: "audio/palavras/salada.mp3", silabaCorreta: "SA", audioSilaba: "audio/silabas/sa.mp3", opcoes: ["SA", "SE", "SI"] },
+    { palavra: "FOGO", imagem: "img/fogo.png", audioPalavra: "audio/palavras/fogo.mp3", silabaCorreta: "FO", audioSilaba: "audio/silabas/fo.mp3", opcoes: ["FA", "FE", "FO"] },
+    { palavra: "TIJOLO", imagem: "img/tijolo.png", audioPalavra: "audio/palavras/tijolo.mp3", silabaCorreta: "TI", audioSilaba: "audio/silabas/ti.mp3", opcoes: ["TA", "TE", "TI"] },
+    { palavra: "VACA", imagem: "img/vaca.png", audioPalavra: "audio/palavras/vaca.mp3", silabaCorreta: "VA", audioSilaba: "audio/silabas/va.mp3", opcoes: ["VA", "VE", "VO"] },
+    { palavra: "MENINO", imagem: "img/menino.png", audioPalavra: "audio/palavras/menino.mp3", silabaCorreta: "ME", audioSilaba: "audio/silabas/me.mp3", opcoes: ["MA", "ME", "MI"] },
+    { palavra: "SAPO", imagem: "img/sapo.png", audioPalavra: "audio/palavras/sapo.mp3", silabaCorreta: "SA", audioSilaba: "audio/silabas/sa.mp3", opcoes: ["SA", "SE", "SO"] },
+    { palavra: "BATATA", imagem: "img/batata.png", audioPalavra: "audio/palavras/batata.mp3", silabaCorreta: "BA", audioSilaba: "audio/silabas/ba.mp3", opcoes: ["BA", "BE", "BO"] },
+    { palavra: "BOLO", imagem: "img/bolo.png", audioPalavra: "audio/palavras/bolo.mp3", silabaCorreta: "BO", audioSilaba: "audio/silabas/bo.mp3", opcoes: ["BA", "BE", "BO"] },
+    { palavra: "GORILA", imagem: "img/gorila.png", audioPalavra: "audio/palavras/gorila.mp3", silabaCorreta: "GO", audioSilaba: "audio/silabas/go.mp3", opcoes: ["GA", "GO", "GU"] },
+    { palavra: "CAMA", imagem: "img/cama.png", audioPalavra: "audio/palavras/cama.mp3", silabaCorreta: "CA", audioSilaba: "audio/silabas/ca.mp3", opcoes: ["CA", "CO", "CU"] },
+    { palavra: "CORUJA", imagem: "img/coruja.png", audioPalavra: "audio/palavras/coruja.mp3", silabaCorreta: "CO", audioSilaba: "audio/silabas/co.mp3", opcoes: ["CA", "CO", "CU"] },
+    { palavra: "GARFO", imagem: "img/garfo.png", audioPalavra: "audio/palavras/garfo.mp3", silabaCorreta: "FO", audioSilaba: "audio/silabas/fo.mp3", opcoes: ["FA", "FE", "FO"] },
+    { palavra: "CAMELO", imagem: "img/camelo.png", audioPalavra: "audio/palavras/camelo.mp3", silabaCorreta: "CA", audioSilaba: "audio/silabas/ca.mp3", opcoes: ["CA", "CO", "CU"] },
+    { palavra: "FADA", imagem: "img/fada.png", audioPalavra: "audio/palavras/fada.mp3", silabaCorreta: "FA", audioSilaba: "audio/silabas/fa.mp3", opcoes: ["FA", "FE", "FO"] },
+    { palavra: "CEBOLA", imagem: "img/cebola.png", audioPalavra: "audio/palavras/cebola.mp3", silabaCorreta: "CE", audioSilaba: "audio/silabas/ce.mp3", opcoes: ["CA", "CE", "CI"] },
+    { palavra: "FACA", imagem: "img/faca.png", audioPalavra: "audio/palavras/faca.mp3", silabaCorreta: "FA", audioSilaba: "audio/silabas/fa.mp3", opcoes: ["FA", "FE", "FI"] },
+    { palavra: "BUZINA", imagem: "img/buzina.png", audioPalavra: "audio/palavras/buzina.mp3", silabaCorreta: "BU", audioSilaba: "audio/silabas/bu.mp3", opcoes: ["BA", "BE", "BU"] },
+    { palavra: "COPO", imagem: "img/copo.png", audioPalavra: "audio/palavras/copo.mp3", silabaCorreta: "CO", audioSilaba: "audio/silabas/co.mp3", opcoes: ["CA", "CO", "CU"] },
+    { palavra: "RODA", imagem: "img/roda.png", audioPalavra: "audio/palavras/roda.mp3", silabaCorreta: "RO", audioSilaba: "audio/silabas/ro.mp3", opcoes: ["RA", "RE", "RO"] },
+    { palavra: "PENA", imagem: "img/pena.png", audioPalavra: "audio/palavras/pena.mp3", silabaCorreta: "PE", audioSilaba: "audio/silabas/pe.mp3", opcoes: ["PA", "PE", "PI"] },
+    { palavra: "LATA", imagem: "img/lata.png", audioPalavra: "audio/palavras/lata.mp3", silabaCorreta: "LA", audioSilaba: "audio/silabas/la.mp3", opcoes: ["LA", "LE", "LO"] },
+    { palavra: "VELA", imagem: "img/vela.png", audioPalavra: "audio/palavras/vela.mp3", silabaCorreta: "VE", audioSilaba: "audio/silabas/ve.mp3", opcoes: ["VA", "VE", "VI"] },
+    { palavra: "LUPA", imagem: "img/lupa.png", audioPalavra: "audio/palavras/lupa.mp3", silabaCorreta: "LU", audioSilaba: "audio/silabas/lu.mp3", opcoes: ["LA", "LE", "LU"] },
+    { palavra: "SINO", imagem: "img/sino.png", audioPalavra: "audio/palavras/sino.mp3", silabaCorreta: "SI", audioSilaba: "audio/silabas/si.mp3", opcoes: ["SA", "SE", "SI"] },
+    { palavra: "BOCA", imagem: "img/boca.png", audioPalavra: "audio/palavras/boca.mp3", silabaCorreta: "BO", audioSilaba: "audio/silabas/bo.mp3", opcoes: ["BA", "BE", "BO"] },
+    { palavra: "DEDO", imagem: "img/dedo.png", audioPalavra: "audio/palavras/dedo.mp3", silabaCorreta: "DE", audioSilaba: "audio/silabas/de.mp3", opcoes: ["DA", "DE", "DO"] },
+    { palavra: "FOCA", imagem: "img/foca.png", audioPalavra: "audio/palavras/foca.mp3", silabaCorreta: "FO", audioSilaba: "audio/silabas/fo.mp3", opcoes: ["FA", "FE", "FO"] },
+    { palavra: "LOJA", imagem: "img/loja.png", audioPalavra: "audio/palavras/loja.mp3", silabaCorreta: "LO", audioSilaba: "audio/silabas/lo.mp3", opcoes: ["LA", "LE", "LO"] },
+    { palavra: "BONÉ", imagem: "img/bone.png", audioPalavra: "audio/palavras/bone.mp3", silabaCorreta: "BO", audioSilaba: "audio/silabas/bo.mp3", opcoes: ["BA", "BE", "BO"] },
+    { palavra: "BODE", imagem: "img/bode.png", audioPalavra: "audio/palavras/bode.mp3", silabaCorreta: "BO", audioSilaba: "audio/silabas/bo.mp3", opcoes: ["BA", "BE", "BO"] },
+    { palavra: "CAFÉ", imagem: "img/cafe.png", audioPalavra: "audio/palavras/cafe.mp3", silabaCorreta: "CA", audioSilaba: "audio/silabas/ca.mp3", opcoes: ["CA", "CO", "CU"] },
+    { palavra: "MATO", imagem: "img/mato.png", audioPalavra: "audio/palavras/mato.mp3", silabaCorreta: "MA", audioSilaba: "audio/silabas/ma.mp3", opcoes: ["MA", "ME", "MI"] },
+    { palavra: "FITA", imagem: "img/fita.png", audioPalavra: "audio/palavras/fita.mp3", silabaCorreta: "FI", audioSilaba: "audio/silabas/fi.mp3", opcoes: ["FA", "FE", "FI"] },
+    { palavra: "PERA", imagem: "img/pera.png", audioPalavra: "audio/palavras/pera.mp3", silabaCorreta: "PE", audioSilaba: "audio/silabas/pe.mp3", opcoes: ["PA", "PE", "PI"] },
+    { palavra: "LOBO", imagem: "img/lobo.png", audioPalavra: "audio/palavras/lobo.mp3", silabaCorreta: "LO", audioSilaba: "audio/silabas/lo.mp3", opcoes: ["LA", "LE", "LO"] },
+    { palavra: "LIXO", imagem: "img/lixo.png", audioPalavra: "audio/palavras/lixo.mp3", silabaCorreta: "LI", audioSilaba: "audio/silabas/li.mp3", opcoes: ["LA", "LE", "LI"] },
+    { palavra: "MOTO", imagem: "img/moto.png", audioPalavra: "audio/palavras/moto.mp3", silabaCorreta: "MO", audioSilaba: "audio/silabas/mo.mp3", opcoes: ["MA", "ME", "MO"] }
 ];
-
-let palavrasRestantes = [...bancoDePalavras];
-let palavraAtual = null;
-
-// Seleção de Elementos
-const displayImagem = document.getElementById('display-imagem');
-const slotVazio = document.getElementById('slot-vazio');
-const parteExistente = document.getElementById('parte-existente-palavra');
-const opcoesContainer = document.getElementById('opcoes-silabas');
-const feedbackVisual = document.getElementById('feedback-visual');
-
-// 2. Função para Sortear Palavra Sem Repetir
-function sortearPalavra() {
-    if (palavrasRestantes.length === 0) {
-        alert("Parabéns! Você completou todas as palavras!");
-        palavrasRestantes = [...bancoDePalavras]; // Reinicia o jogo
-    }
-
-    const index = Math.floor(Math.random() * palavrasRestantes.length);
-    palavraAtual = palavrasRestantes.splice(index, 1)[0];
-    montarFase();
-}
-
-// 3. Montar a Interface da Fase
-function montarFase() {
-    displayImagem.src = palavraAtual.img;
-    slotVazio.textContent = "?";
-    slotVazio.classList.remove('shake');
-    parteExistente.textContent = palavraAtual.palavra.replace(palavraAtual.correta, "");
-    
-    opcoesContainer.innerHTML = "";
-    palavraAtual.silabas.forEach(silaba => {
-        const btn = document.createElement('button');
-        btn.classList.add('btn-silaba');
-        btn.textContent = silaba;
-        btn.draggable = true;
-        
-        // Eventos de Drag (Mouse)
-        btn.addEventListener('dragstart', (e) => {
-            e.dataTransfer.setData('text', silaba);
-            btn.classList.add('dragging');
-        });
-        btn.addEventListener('dragend', () => btn.classList.remove('dragging'));
-
-        // Evento para Touch (Celular/Tablet) usando clique simples para facilitar
-        btn.addEventListener('touchstart', () => {
-            verificarResposta(silaba);
-        });
-
-        opcoesContainer.appendChild(btn);
-    });
-}
-
-// 4. Lógica de Drag and Drop
-slotVazio.addEventListener('dragover', (e) => e.preventDefault());
-slotVazio.addEventListener('drop', (e) => {
-    const silabaRecebida = e.dataTransfer.getData('text');
-    verificarResposta(silabaRecebida);
-});
-
-// 5. Verificação de Acerto ou Erro
-function verificarResposta(silaba) {
-    if (silaba === palavraAtual.correta) {
-        processarAcerto(silaba);
-    } else {
-        processarErro();
-    }
-}
-
-function processarAcerto(silaba) {
-    slotVazio.textContent = silaba;
-    slotVazio.style.borderStyle = "solid";
-    
-    // Tocar Áudios em sequência
-    tocarAudio(palavraAtual.audioSilaba, () => {
-        tocarAudio(palavraAtual.audioPalavra, () => {
-            tocarAudio('audio/feedbacks/acertou.mp3');
-        });
-    });
-
-    // Confetes
-    confetti({
-        particleCount: 150,
-        spread: 70,
-        origin: { y: 0.6 }
-    });
-
-    setTimeout(sortearPalavra, 4000); // Espera 4s para a próxima
-}
-
-function processarErro() {
-    tocarAudio('audio/feedbacks/errou.mp3');
-    document.getElementById('game-wrapper').classList.add('shake');
-    feedbackVisual.textContent = "😢";
-    
-    setTimeout(() => {
-        document.getElementById('game-wrapper').classList.remove('shake');
-        feedbackVisual.textContent = "";
-    }, 2000);
-}
-
-// Auxiliar para tocar áudio
-function tocarAudio(caminho, aoTerminar) {
-    const audio = new Audio(caminho);
-    audio.play();
-    if (aoTerminar) audio.onended = aoTerminar;
-}
-
-// Iniciar o jogo
-sortearPalavra();
