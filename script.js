@@ -1,14 +1,13 @@
 // ==========================================
 // 1. DICIONÁRIO DE MAPEAMENTO FONÉTICO
 // ==========================================
-// Relaciona a sílaba com o nome exato do arquivo MP3 salvo.
 const mapeamentoAudios = {
     "BA": "ba", "CA": "ca", "DA": "da", "FA": "fa", "GA": "ga", "JA": "ja", "LA": "la", "MA": "ma", "NA": "na", "PA": "pa", "RA": "ra", "SA": "sa", "TA": "ta", "VA": "va",
     "BE": { fechado: "be_fechado" },
-    "CE": { fechado: "se_fechado" }, // O 'CE' de Cebola usa o som do 'se_fechado'
+    "CE": { fechado: "se_fechado" }, 
     "DE": { fechado: "de_fechado" },
     "FE": { aberto: "fe_aberto" },
-    "GE": { fechado: "je_fechado" }, // O 'GE' de Gelo usa o som do 'je_fechado'
+    "GE": { fechado: "je_fechado" }, 
     "JE": { fechado: "je_fechado" },
     "LE": { fechado: "le_fechado" },
     "ME": { fechado: "me_fechado" },
@@ -34,9 +33,8 @@ const mapeamentoAudios = {
 };
 
 // ==========================================
-// 2. BANCO DE PALAVRAS AUTOMATIZADO
+// 2. BANCO DE PALAVRAS
 // ==========================================
-// Sem o array "opcoes". O código fará isso sozinho!
 const bancoDePalavras = [
     { palavra: "BEBÊ", imagem: "img/bebe.png", audioPalavra: "audio/palavras/bebe.mp3", silabaCorreta: "BE", tipoSom: "fechado" },
     { palavra: "PATO", imagem: "img/pato.png", audioPalavra: "audio/palavras/pato.mp3", silabaCorreta: "PA" },
@@ -100,229 +98,220 @@ const bancoDePalavras = [
 ];
 
 // ==========================================
-// 3. VARIÁVEIS DE CONTROLE DO JOGO
+// 3. VARIÁVEIS DE ESTADO
 // ==========================================
 let faseAtual = 0;
 let palavraSorteada;
 let bancoEmbaralhado = [];
+let draggingElement = null;
 
 // ==========================================
-// 4. FUNÇÕES DE SISTEMA (ÁUDIO E SORTEIO)
+// 4. FUNÇÕES DE SUPORTE (Sorteio, Cores e Áudio)
 // ==========================================
 
-// Função para tocar as frases aleatórias de Acerto (Acerto1.mp3 a Acerto3.mp3) ou Erro (Erro1.mp3 a Erro3.mp3)
-function tocarIncentivo(tipo) {
-    const numero = Math.floor(Math.random() * 3) + 1; // Sorteia 1, 2 ou 3
-    const audio = new Audio(`audio/sistema/${tipo}${numero}.mp3`);
-    audio.play();
+function mudarCorFundo() {
+    const num = Math.floor(Math.random() * 6) + 1;
+    document.body.className = `cor-fundo-${num}`;
 }
 
-// Descobre o arquivo MP3 correto com base no dicionário e tipo de som
-function getCaminhoAudioSilaba(silaba, tipoSom = null) {
-    const dados = mapeamentoAudios[silaba];
-    if (!dados) return null; // Prevenção de erro caso a sílaba não exista
-
-    let nomeArquivo = "";
-    if (typeof dados === "string") {
-        nomeArquivo = dados;
-    } else if (tipoSom && dados[tipoSom]) {
-        nomeArquivo = dados[tipoSom];
-    } else {
-        // Fallback: Se não tem tipo especifico, pega a primeira variação que tiver
-        nomeArquivo = Object.values(dados)[0];
+function falarTTS(texto) {
+    if ('speechSynthesis' in window) {
+        const mensagem = new SpeechSynthesisUtterance(texto);
+        mensagem.lang = 'pt-BR';
+        mensagem.rate = 0.9;
+        window.speechSynthesis.speak(mensagem);
     }
-    return `audio/silabas/${nomeArquivo}.mp3`;
 }
 
-// Sorteia 2 opções erradas (da mesma família ou aleatórias)
+function tocarSom(caminho) {
+    const audio = new Audio(caminho);
+    audio.play().catch(e => console.log("Erro ao tocar áudio:", caminho));
+}
+
 function sortearOpcoes(correta) {
     const todasSilabas = Object.keys(mapeamentoAudios);
-    const consoanteCorreta = correta.charAt(0);
+    const consoante = correta.charAt(0);
     
-    // Busca sílabas da mesma "família" que não sejam a correta
-    let mesmaFamilia = todasSilabas.filter(s => s.charAt(0) === consoanteCorreta && s !== correta);
+    // Regra: Tenta pegar sílabas da mesma família
+    let familia = todasSilabas.filter(s => s.charAt(0) === consoante && s !== correta);
     
-    // Embaralha e seleciona até 2
-    let distratores = mesmaFamilia.sort(() => Math.random() - 0.5).slice(0, 2);
-
-    // Se faltarem opções (ex: Família do J tem poucas gravadas), preenche com aleatórias
-    while (distratores.length < 2) {
-        let aleatoria = todasSilabas[Math.floor(Math.random() * todasSilabas.length)];
-        if (aleatoria !== correta && !distratores.includes(aleatoria)) {
-            distratores.push(aleatoria);
-        }
+    let distratores = familia.sort(() => 0.5 - Math.random()).slice(0, 2);
+    
+    while(distratores.length < 2) {
+        let randomS = todasSilabas[Math.floor(Math.random() * todasSilabas.length)];
+        if(randomS !== correta && !distratores.includes(randomS)) distratores.push(randomS);
     }
-
-    // Retorna as 3 sílabas (1 certa, 2 erradas) embaralhadas
-    return [correta, ...distratores].sort(() => Math.random() - 0.5);
+    
+    return [correta, ...distratores].sort(() => 0.5 - Math.random());
 }
 
 // ==========================================
-// 5. FLUXO PRINCIPAL DO JOGO
+// 5. LÓGICA PRINCIPAL
 // ==========================================
+
 function iniciarJogo() {
-    bancoEmbaralhado = [...bancoDePalavras].sort(() => Math.random() - 0.5);
+    bancoEmbaralhado = [...bancoDePalavras].sort(() => 0.5 - Math.random());
     faseAtual = 0;
     carregarFase();
 }
 
 function carregarFase() {
     if (faseAtual >= bancoEmbaralhado.length) {
-        alert("🎉 Parabéns! Você completou todas as palavras!");
+        alert("🎉 Incrível! Você completou todas as palavras!");
         iniciarJogo();
         return;
     }
 
+    mudarCorFundo();
     palavraSorteada = bancoEmbaralhado[faseAtual];
 
-    // Atualiza a Imagem
-    const imgElement = document.getElementById("imagem-pergunta");
-    if (imgElement) imgElement.src = palavraSorteada.imagem;
+    // Imagem e TTS
+    document.getElementById("imagem-pergunta").src = palavraSorteada.imagem;
+    document.getElementById("btn-ouvir").onclick = () => falarTTS(palavraSorteada.palavra);
+    
+    // Auto-falar ao começar
+    setTimeout(() => falarTTS(palavraSorteada.palavra), 500);
 
-    tocarPalavra();
-
-    const btnOuvir = document.getElementById("btn-ouvir");
-    if (btnOuvir) btnOuvir.onclick = tocarPalavra;
-
-    // Reseta o Alvo
-    const alvoDrop = document.getElementById("alvo-drop");
-    alvoDrop.innerHTML = "?";
-    alvoDrop.className = ""; // Remove as classes erro/acerto
+    // Reset Alvo
+    const alvo = document.getElementById("alvo-drop");
+    alvo.innerText = "?";
+    alvo.className = ""; 
 
     gerarOpcoes();
 }
 
-function tocarPalavra() {
-    const audio = new Audio(palavraSorteada.audioPalavra);
-    audio.play();
-}
-
 function gerarOpcoes() {
     const container = document.getElementById("container-opcoes");
-    container.innerHTML = ""; 
+    container.innerHTML = "";
+    const opcoes = sortearOpcoes(palavraSorteada.silabaCorreta);
 
-    // Sorteio Automático acontece AQUI!
-    let opcoesSorteadas = sortearOpcoes(palavraSorteada.silabaCorreta);
-
-    opcoesSorteadas.forEach(silaba => {
+    opcoes.forEach(silaba => {
         const div = document.createElement("div");
         div.innerText = silaba;
         div.classList.add("opcao-silaba");
-        
         div.draggable = true;
-        div.addEventListener("dragstart", handleDragStart);
-        
-        div.addEventListener("touchstart", handleTouchStart, { passive: false });
-        div.addEventListener("touchmove", handleTouchMove, { passive: false });
-        div.addEventListener("touchend", handleTouchEnd);
 
-        // Toca o som inteligente ao clicar na sílaba
-        div.addEventListener("click", () => {
-            const tipoSomUsado = (silaba === palavraSorteada.silabaCorreta) ? palavraSorteada.tipoSom : null;
-            const caminhoAudio = getCaminhoAudioSilaba(silaba, tipoSomUsado);
-            if(caminhoAudio) {
-                new Audio(caminhoAudio).play();
-            }
+        // Eventos Click (Ouvir sílaba)
+        div.onclick = () => {
+            const dados = mapeamentoAudios[silaba];
+            let path = "";
+            if (typeof dados === "string") path = `audio/silabas/${dados}.mp3`;
+            else path = `audio/silabas/${dados[palavraSorteada.tipoSom] || Object.values(dados)[0]}.mp3`;
+            tocarSom(path);
+        };
+
+        // --- MOUSE DRAG ---
+        div.addEventListener("dragstart", (e) => {
+            e.dataTransfer.setData("text", silaba);
+            div.style.opacity = "0.5";
         });
+        div.addEventListener("dragend", () => div.style.opacity = "1");
+
+        // --- TOUCH DRAG (TABLET/CELULAR) ---
+        div.addEventListener("touchstart", handleTouchStart, {passive: false});
+        div.addEventListener("touchmove", handleTouchMove, {passive: false});
+        div.addEventListener("touchend", handleTouchEnd);
 
         container.appendChild(div);
     });
 
-    configurarAlvoDrop();
+    configurarAlvoDesktop();
 }
 
 // ==========================================
-// 6. LÓGICAS DE ARRASTAR E SOLTAR
+// 6. INTERATIVIDADE (O PULO DO GATO)
 // ==========================================
-function handleDragStart(e) {
-    e.dataTransfer.setData("text/plain", e.target.innerText);
-}
 
-function configurarAlvoDrop() {
+function configurarAlvoDesktop() {
     const alvo = document.getElementById("alvo-drop");
-
-    alvo.addEventListener("dragover", (e) => {
-        e.preventDefault(); 
-        alvo.classList.add("hover");
-    });
-
-    alvo.addEventListener("dragleave", () => alvo.classList.remove("hover"));
-
-    alvo.addEventListener("drop", (e) => {
+    alvo.ondragover = (e) => { e.preventDefault(); alvo.classList.add("hover"); };
+    alvo.ondragleave = () => alvo.classList.remove("hover");
+    alvo.ondrop = (e) => {
         e.preventDefault();
         alvo.classList.remove("hover");
-        const silabaSoltada = e.dataTransfer.getData("text/plain");
-        verificarResposta(silabaSoltada);
-    });
+        verificarResposta(e.dataTransfer.getData("text"));
+    };
 }
 
-// Touch Devices
-let elementoEmMovimento = null;
-let posOriginal = { x: 0, y: 0 };
-
+// Funções Touch
 function handleTouchStart(e) {
-    elementoEmMovimento = e.target;
-    const rect = elementoEmMovimento.getBoundingClientRect();
-    posOriginal = { x: rect.left, y: rect.top };
-    
-    elementoEmMovimento.style.position = "absolute";
-    elementoEmMovimento.style.zIndex = 1000;
+    draggingElement = e.target;
+    draggingElement.style.transition = "none";
 }
 
 function handleTouchMove(e) {
-    if (!elementoEmMovimento) return;
-    e.preventDefault(); 
-    
+    if (!draggingElement) return;
+    e.preventDefault();
     const touch = e.touches[0];
-    elementoEmMovimento.style.left = touch.pageX - (elementoEmMovimento.offsetWidth / 2) + "px";
-    elementoEmMovimento.style.top = touch.pageY - (elementoEmMovimento.offsetHeight / 2) + "px";
+    
+    draggingElement.style.position = 'fixed';
+    draggingElement.style.left = (touch.clientX - 45) + 'px';
+    draggingElement.style.top = (touch.clientY - 45) + 'px';
+    draggingElement.style.zIndex = '1000';
+
+    const alvo = document.getElementById("alvo-drop");
+    const rect = alvo.getBoundingClientRect();
+
+    if (touch.clientX > rect.left && touch.clientX < rect.right &&
+        touch.clientY > rect.top && touch.clientY < rect.bottom) {
+        alvo.classList.add("hover");
+    } else {
+        alvo.classList.remove("hover");
+    }
 }
 
 function handleTouchEnd(e) {
-    if (!elementoEmMovimento) return;
-
-    elementoEmMovimento.style.display = "none";
+    if (!draggingElement) return;
     const touch = e.changedTouches[0];
-    const elementoAbaixo = document.elementFromPoint(touch.clientX, touch.clientY);
-    elementoEmMovimento.style.display = "flex"; 
+    const alvo = document.getElementById("alvo-drop");
+    const rect = alvo.getBoundingClientRect();
 
-    if (elementoAbaixo && (elementoAbaixo.id === "alvo-drop" || elementoAbaixo.closest("#alvo-drop"))) {
-        verificarResposta(elementoEmMovimento.innerText);
-    } else {
-        elementoEmMovimento.style.position = "static";
+    alvo.classList.remove("hover");
+
+    if (touch.clientX > rect.left && touch.clientX < rect.right &&
+        touch.clientY > rect.top && touch.clientY < rect.bottom) {
+        verificarResposta(draggingElement.innerText);
     }
 
-    elementoEmMovimento = null;
+    draggingElement.style.position = 'static';
+    draggingElement.style.zIndex = '1';
+    draggingElement = null;
 }
 
 // ==========================================
-// 7. VERIFICAÇÃO DE ACERTO OU ERRO
+// 7. VERIFICAÇÃO FINAL
 // ==========================================
+
 function verificarResposta(silaba) {
     const alvo = document.getElementById("alvo-drop");
 
     if (silaba === palavraSorteada.silabaCorreta) {
-        // Toca Acerto1.mp3, Acerto2.mp3 ou Acerto3.mp3
-        tocarIncentivo("Acerto"); 
+        // ACERTO
+        const somAcerto = Math.floor(Math.random() * 3) + 1;
+        tocarSom(`audio/sistema/Acerto${somAcerto}.mp3`);
+        
         alvo.innerText = silaba;
         alvo.classList.add("acerto");
-        
-        if (typeof confetti === "function") {
-            confetti({ particleCount: 100, spread: 70, origin: { y: 0.6 } });
+
+        if (typeof confetti === 'function') {
+            confetti({ particleCount: 150, spread: 70, origin: { y: 0.6 } });
         }
+
+        // Toca o som da palavra após 500ms
+        setTimeout(() => tocarSom(palavraSorteada.audioPalavra), 500);
 
         setTimeout(() => {
             faseAtual++;
             carregarFase();
-        }, 2000);
+        }, 2500);
 
     } else {
-        // Toca Erro1.mp3, Erro2.mp3 ou Erro3.mp3
-        tocarIncentivo("Erro");
-        alvo.classList.add("erro");
+        // ERRO
+        const somErro = Math.floor(Math.random() * 3) + 1;
+        tocarSom(`audio/sistema/Erro${somErro}.mp3`);
         
-        setTimeout(() => alvo.classList.remove("erro"), 500);
-        gerarOpcoes(); 
+        alvo.classList.add("erro");
+        setTimeout(() => alvo.classList.remove("erro"), 1000);
     }
 }
 
