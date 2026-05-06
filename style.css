@@ -1,206 +1,196 @@
-/* 1. CONFIGURAÇÕES GERAIS */
+/* ==========================================
+   1. CONFIGURAÇÕES GERAIS E FONTE
+   ========================================== */
+@import url('https://fonts.googleapis.com/css2?family=Fredoka:wght@400;600;700&display=swap');
+
 * {
     box-sizing: border-box;
     margin: 0;
     padding: 0;
-    -webkit-tap-highlight-color: transparent; /* Remove brilho azul ao tocar no celular */
+    -webkit-tap-highlight-color: transparent;
+    user-select: none; /* Impede que a criança selecione o texto acidentalmente */
 }
 
 body {
     font-family: 'Fredoka', sans-serif;
     min-height: 100vh;
     display: flex;
-    justify-content: center;
+    flex-direction: column;
     align-items: center;
-    transition: background-color 0.8s ease; /* Transição suave das cores de fundo */
-    overflow: hidden; /* Evita que a tela role no tablet */
-    touch-action: none; /* Bloqueia gestos do navegador para não bugar o arrasto */
+    justify-content: center;
+    transition: background-color 0.8s ease;
+    overflow: hidden; /* Evita rolagens desnecessárias no mobile */
+    touch-action: none; /* Crucial para o arraste touch funcionar sem scroll */
 }
 
-/* 2. SISTEMA DINÂMICO DE CORES PASTÉIS */
-.cor-fundo-1 { background-color: #FFB3BA; } /* Rosa Pastel */
-.cor-fundo-2 { background-color: #BAFFC9; } /* Verde Pastel */
-.cor-fundo-3 { background-color: #BAE1FF; } /* Azul Pastel */
-.cor-fundo-4 { background-color: #FFFFBA; } /* Amarelo Pastel */
-.cor-fundo-5 { background-color: #E0BBE4; } /* Roxo Pastel */
-.cor-fundo-6 { background-color: #F5E1DA; } /* Marrom Claro/Bege */
+/* ==========================================
+   2. CORES DE FUNDO (PASTEL)
+   ========================================== */
+.cor-fundo-1 { background-color: #FFEBEE; } /* Rosa suave */
+.cor-fundo-2 { background-color: #E8F5E9; } /* Verde menta */
+.cor-fundo-3 { background-color: #E3F2FD; } /* Azul céu */
+.cor-fundo-4 { background-color: #FFFDE7; } /* Amarelo baunilha */
+.cor-fundo-5 { background-color: #F3E5F5; } /* Lavanda */
+.cor-fundo-6 { background-color: #EFEBE9; } /* Areia */
 
-/* 3. CONTAINER PRINCIPAL */
+/* ==========================================
+   3. ESTRUTURA PRINCIPAL (MOBILE FIRST)
+   ========================================== */
 #jogo-container {
-    width: 90%;
-    max-width: 500px;
-    background-color: rgba(255, 255, 255, 0.85); /* Fundo branco levemente transparente */
-    padding: 30px;
+    display: flex;
+    flex-direction: column; /* Empilhamento vertical no Mobile */
+    align-items: center;
+    width: 95%;
+    max-width: 600px;
+    background: rgba(255, 255, 255, 0.9);
+    padding: 20px;
     border-radius: 40px;
-    box-shadow: 0 20px 40px rgba(0, 0, 0, 0.1);
-    text-align: center;
-}
-
-h1 {
-    font-size: 1.6rem;
-    color: #555;
-    margin-bottom: 20px;
-    text-transform: uppercase;
-}
-
-/* 4. BOTÃO DE OUVIR (3D) */
-#btn-ouvir {
-    background-color: #FFD93D;
-    border: none;
-    border-radius: 50%;
-    width: 75px;
-    height: 75px;
-    font-size: 35px;
-    cursor: pointer;
-    box-shadow: 0 8px 0 #D4B100; /* Sombra que dá volume */
-    transition: all 0.1s;
-    margin-bottom: 20px;
-}
-
-#btn-ouvir:active {
-    transform: translateY(4px); /* Botão afunda */
-    box-shadow: 0 4px 0 #D4B100;
-}
-
-/* 5. ÁREA DA IMAGEM */
-#moldura-imagem {
-    background: #FFF;
-    border: 5px solid #EEE;
-    border-radius: 30px;
-    width: 220px;
-    height: 200px;
-    margin: 0 auto 25px;
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    overflow: hidden;
-}
-
-/* --- IMAGEM --- */
-#imagem-pergunta {
-    width: 100%;
-    max-width: 300px; /* Deixa a imagem grandona */
-    height: auto;
-    object-fit: contain;
-    border-radius: 20px;
-    margin-bottom: 20px;
-}
-
-/* --- CONTAINER DA PALAVRA QUEBRADA --- */
-.container-palavra-completa {
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    gap: 10px;
-    font-size: 3.5rem;
-    font-weight: bold;
-    color: #444;
-    margin-bottom: 30px;
-}
-
-/* --- O ALVO (DENTRO DA PALAVRA) --- */
-#alvo-drop {
-    width: 100px;
-    height: 80px;
-    background-color: #f9f9f9;
-    border: 4px dashed #BBB;
-    border-radius: 15px;
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    color: #CCC;
-    transition: all 0.3s;
-}
-
-/* --- EFEITOS (HOVER, ACERTO, ERRO) --- */
-#alvo-drop.hover {
-    background-color: #E3F2FD;
-    border: 4px solid #4FC3F7;
-    transform: scale(1.1);
-}
-
-#alvo-drop.acerto {
-    border: 4px solid #48bb78;
-    color: #48bb78;
-    background-color: #f0fff4;
-}
-
-#alvo-drop.erro {
-    border-color: #f56565;
-    background-color: #fff5f5;
-    animation: tremer 0.5s;
-}
-
-@keyframes tremer {
-    0%, 100% { transform: translateX(0); }
-    25% { transform: translateX(-10px); }
-    75% { transform: translateX(10px); }
-}
-
-
-/* PULO DO GATO: Estilo de Acerto */
-#alvo-drop.acerto {
-    background-color: #C8E6C9;
-    border: 4px solid #4CAF50;
-    color: #2E7D32;
-    border-style: solid;
-}
-
-/* PULO DO GATO: Estilo de Erro com Shake */
-#alvo-drop.erro {
-    background-color: #FFCDD2;
-    border: 4px solid #F44336;
-    animation: shake 0.4s ease-in-out;
-}
-
-/* 7. OPÇÕES DE SÍLABAS (BOTÕES 3D) */
-#container-opcoes {
-    display: flex;
-    justify-content: center;
+    box-shadow: 0 15px 30px rgba(0,0,0,0.1);
     gap: 15px;
 }
 
+header h1 {
+    font-size: 1.5rem;
+    color: #555;
+    margin-bottom: 5px;
+}
+
+/* Moldura e Imagem */
+.moldura-imagem {
+    width: 100%;
+    max-width: 300px; /* Requisito: Imagem principal e adequada */
+    background: #FFF;
+    border: 8px solid #FFF;
+    border-radius: 25px;
+    box-shadow: 0 8px 15px rgba(0,0,0,0.05);
+}
+
+#imagem-pergunta {
+    width: 100%;
+    height: auto;
+    display: block;
+    border-radius: 20px;
+}
+
+/* ==========================================
+   4. A PALAVRA E O ALVO (MECÂNICA)
+   ========================================== */
+#container-palavra-completa {
+    display: flex;
+    flex-direction: row; /* Alinhamento horizontal das partes */
+    align-items: center;
+    justify-content: center;
+    gap: 8px;
+    font-size: 3.5rem; /* Fonte grande para leitura fácil */
+    font-weight: 700;
+    color: #333;
+    letter-spacing: 2px;
+}
+
+#alvo-drop {
+    width: 90px;
+    height: 80px;
+    border: 5px dashed #BDBDBD; /* Bordas tracejadas */
+    border-radius: 18px;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    background: #F5F5F5;
+    color: #CCC;
+    transition: all 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+}
+
+/* Estados do Alvo */
+#alvo-drop.hover {
+    border-style: solid;
+    border-color: #2196F3;
+    box-shadow: 0 0 20px rgba(33, 150, 243, 0.5); /* Brilho azul no hover */
+    transform: scale(1.05);
+}
+
+#alvo-drop.acerto {
+    border: 5px solid #4CAF50;
+    background-color: #E8F5E9;
+    color: #2E7D32;
+    transform: scale(1.1); /* Escala 1.1 no acerto */
+}
+
+#alvo-drop.erro {
+    border: 5px solid #F44336;
+    background-color: #FFEBEE;
+    animation: tremer 0.5s; /* Animação de erro */
+}
+
+/* ==========================================
+   5. BOTÕES DE SÍLABAS (BLOCOS DE MONTAR)
+   ========================================== */
+#container-opcoes {
+    display: flex;
+    gap: 15px;
+    margin-top: 20px;
+    justify-content: center;
+    flex-wrap: wrap; /* Garante que caibam no celular */
+}
+
 .opcao-silaba {
-    width: 95px;
-    height: 95px;
-    background-color: #4db8ff;
+    min-width: 85px; /* Tamanho confortável para toque */
+    min-height: 85px;
+    background-color: #4FC3F7;
     color: white;
     font-size: 2.2rem;
-    font-weight: 600;
+    font-weight: 700;
     border-radius: 20px;
     display: flex;
     justify-content: center;
     align-items: center;
-    cursor: grab;
-    user-select: none;
-    touch-action: none; /* Necessário para o script de touch funcionar */
+    cursor: pointer;
+    position: relative;
     
-    /* Efeito Chiclete 3D */
-    box-shadow: 0 8px 0 #2980b9;
+    /* Estilo Bloco 3D */
+    box-shadow: 0 8px 0 #0288D1;
     transition: all 0.1s;
 }
 
-/* Cores variadas para as sílabas */
-.opcao-silaba:nth-child(2) { background-color: #FF85A1; box-shadow: 0 8px 0 #D65D7A; }
-.opcao-silaba:nth-child(3) { background-color: #BA68C8; box-shadow: 0 8px 0 #8E24AA; }
-
 .opcao-silaba:active {
-    cursor: grabbing;
     transform: translateY(4px);
-    box-shadow: 0 4px 0 #2980b9;
+    box-shadow: 0 4px 0 #0288D1;
 }
 
-/* ANIMAÇÃO DE SHAKE (TREMIDINHA) */
-@keyframes shake {
+/* Cores diferentes para os blocos */
+.opcao-silaba:nth-child(even) { background-color: #FF8A65; box-shadow: 0 8px 0 #E64A19; }
+.opcao-silaba:nth-child(3n) { background-color: #BA68C8; box-shadow: 0 8px 0 #7B1FA2; }
+
+/* ==========================================
+   6. ANIMAÇÕES E RESPONSIVIDADE
+   ========================================== */
+@keyframes tremer {
     0%, 100% { transform: translateX(0); }
     20%, 60% { transform: translateX(-10px); }
     40%, 80% { transform: translateX(10px); }
 }
 
-/* RESPONSIVIDADE PARA CELULARES PEQUENOS */
-@media (max-width: 400px) {
-    #jogo-container { padding: 20px; }
-    #moldura-imagem { width: 180px; height: 160px; }
-    .opcao-silaba { width: 80px; height: 80px; font-size: 1.8rem; }
-    #alvo-drop { width: 110px; height: 80px; }
+/* Botão de Áudio */
+.btn-audio {
+    padding: 12px 25px;
+    font-size: 1.2rem;
+    font-weight: 600;
+    border: none;
+    border-radius: 50px;
+    background: #FFD54F;
+    color: #795548;
+    box-shadow: 0 5px 0 #FFA000;
+    cursor: pointer;
+    transition: 0.1s;
+}
+
+.btn-audio:active {
+    transform: translateY(3px);
+    box-shadow: 0 2px 0 #FFA000;
+}
+
+/* Ajustes para telas muito pequenas */
+@media (max-width: 380px) {
+    #container-palavra-completa { font-size: 2.5rem; }
+    #alvo-drop { width: 75px; height: 65px; }
+    .opcao-silaba { min-width: 70px; min-height: 70px; font-size: 1.8rem; }
 }
