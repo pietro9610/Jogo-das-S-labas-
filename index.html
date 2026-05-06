@@ -2,41 +2,42 @@
 <html lang="pt-br">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>Jogo de Alfabetização - Arraste a Sílaba</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Jogo de Alfabetização - Arraste as Sílabas</title>
     
-    <link href="https://fonts.googleapis.com/css2?family=Fredoka:wght@400;600&display=swap" rel="stylesheet">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Fredoka:wght@300..700&display=swap" rel="stylesheet">
     
     <link rel="stylesheet" href="style.css">
-    
-    <script src="https://cdn.jsdelivr.net/npm/canvas-confetti@1.6.0/dist/confetti.browser.min.js"></script>
 </head>
-<body class="cor-fundo-1"> <div id="jogo-container">
-        
-        <header>
-            <h1>QUAL A SÍLABA?</h1>
-            <button id="btn-ouvir" title="Ouvir som da palavra">🔊</button>
-        </header>
+<body>
 
-        <main class="area-pergunta">
-    <div id="moldura-imagem">
-        <img id="imagem-pergunta" src="" alt="Imagem da palavra">
-    </div>
+    <header>
+        <h1>Brincando com as Sílabas</h1>
+    </header>
 
-    <div class="container-palavra-completa">
-        <span id="prefixo-palavra"></span>
-        <div id="alvo-drop">?</div>
-        <span id="sufixo-palavra"></span>
-    </div>
-</main>
+    <main id="jogo-container">
+        <div class="moldura-imagem">
+            <img id="imagem-pergunta" src="" alt="Imagem da palavra">
+        </div>
 
+        <div id="container-palavra-completa">
+            <span id="prefixo-palavra"></span>
+            <div id="alvo-drop">?</div>
+            <span id="sufixo-palavra"></span>
+        </div>
 
-        <footer id="container-opcoes">
-            </footer>
+        <button id="btn-ouvir" class="btn-audio">
+            <span class="icone">🔊</span> Ouvir Palavra
+        </button>
+    </main>
 
-    </div>
+    <section id="container-opcoes">
+        </section>
 
+    <script src="https://cdn.jsdelivr.net/npm/canvas-confetti@1.9.3/dist/confetti.browser.min.js"></script>
+    
     <script src="script.js"></script>
-
 </body>
 </html>
