@@ -1,43 +1,36 @@
 <!DOCTYPE html>
-<html lang="pt-br">
+<html lang="pt-BR">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Jogo de Alfabetização - Arraste as Sílabas</title>
+    <title>Jogo de Completar Sílabas</title>
     
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Fredoka:wght@300..700&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Fredoka:wght@400;600;700&display=swap" rel="stylesheet">
     
     <link rel="stylesheet" href="style.css">
 </head>
 <body>
 
-    <header>
-        <h1>Brincando com as Sílabas</h1>
-    </header>
-
-    <main id="jogo-container">
-        <div class="moldura-imagem">
-            <img id="imagem-pergunta" src="" alt="Imagem da palavra">
-        </div>
-
-        <div id="container-palavra-completa">
+    <div class="game-container cor-fundo-1">
+        
+        <img id="imagem-pergunta" src="" alt="Imagem da palavra">
+        
+        <div class="area-palavra">
             <span id="prefixo-palavra"></span>
             <div id="alvo-drop">?</div>
             <span id="sufixo-palavra"></span>
         </div>
+        
+        <button id="btn-ouvir">🔊 Ouvir Palavra</button>
+        
+        <div id="container-opcoes"></div>
+        
+    </div>
 
-        <button id="btn-ouvir" class="btn-audio">
-            <span class="icone">🔊</span> Ouvir Palavra
-        </button>
-    </main>
-
-    <section id="container-opcoes">
-        </section>
-
-    <script src="https://cdn.jsdelivr.net/npm/canvas-confetti@1.9.3/dist/confetti.browser.min.js"></script>
-    
+    <script src="https://cdn.jsdelivr.net/npm/canvas-confetti@1.6.0/dist/confetti.browser.min.js"></script>
     <script src="script.js"></script>
+
 </body>
 </html>
