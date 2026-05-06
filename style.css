@@ -1,196 +1,184 @@
-/* ==========================================
-   1. CONFIGURAÇÕES GERAIS E FONTE
-   ========================================== */
 @import url('https://fonts.googleapis.com/css2?family=Fredoka:wght@400;600;700&display=swap');
 
 * {
     box-sizing: border-box;
     margin: 0;
     padding: 0;
+    font-family: 'Fredoka', sans-serif;
     -webkit-tap-highlight-color: transparent;
-    user-select: none; /* Impede que a criança selecione o texto acidentalmente */
 }
 
 body {
-    font-family: 'Fredoka', sans-serif;
     min-height: 100vh;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    padding: 20px;
+    transition: background-color 0.8s ease-in-out;
+}
+
+/* Cores de Fundo Pastéis */
+.cor-fundo-1 { background-color: #FFC0CB; } /* Soft Pink */
+.cor-fundo-2 { background-color: #A8E6CF; } /* Mint Green */
+.cor-fundo-3 { background-color: #BAE1FF; } /* Sky Blue */
+.cor-fundo-4 { background-color: #FFF2B2; } /* Pale Gold */
+.cor-fundo-5 { background-color: #E6E6FA; } /* Lavender */
+.cor-fundo-6 { background-color: #FFDAB9; } /* Peach */
+
+/* Cartão do Jogo */
+.game-container {
+    background: rgba(255, 255, 255, 0.85);
+    backdrop-filter: blur(12px);
+    -webkit-backdrop-filter: blur(12px);
+    border-radius: 35px;
+    box-shadow: 0 20px 40px rgba(0, 0, 0, 0.08), 
+                inset 0 0 0 4px rgba(255, 255, 255, 0.5);
+    padding: 30px 20px;
+    width: 100%;
+    max-width: 420px;
     display: flex;
     flex-direction: column;
     align-items: center;
-    justify-content: center;
-    transition: background-color 0.8s ease;
-    overflow: hidden; /* Evita rolagens desnecessárias no mobile */
-    touch-action: none; /* Crucial para o arraste touch funcionar sem scroll */
+    gap: 25px;
 }
 
-/* ==========================================
-   2. CORES DE FUNDO (PASTEL)
-   ========================================== */
-.cor-fundo-1 { background-color: #FFEBEE; } /* Rosa suave */
-.cor-fundo-2 { background-color: #E8F5E9; } /* Verde menta */
-.cor-fundo-3 { background-color: #E3F2FD; } /* Azul céu */
-.cor-fundo-4 { background-color: #FFFDE7; } /* Amarelo baunilha */
-.cor-fundo-5 { background-color: #F3E5F5; } /* Lavanda */
-.cor-fundo-6 { background-color: #EFEBE9; } /* Areia */
-
-/* ==========================================
-   3. ESTRUTURA PRINCIPAL (MOBILE FIRST)
-   ========================================== */
-#jogo-container {
-    display: flex;
-    flex-direction: column; /* Empilhamento vertical no Mobile */
-    align-items: center;
-    width: 95%;
-    max-width: 600px;
-    background: rgba(255, 255, 255, 0.9);
-    padding: 20px;
-    border-radius: 40px;
-    box-shadow: 0 15px 30px rgba(0,0,0,0.1);
-    gap: 15px;
-}
-
-header h1 {
-    font-size: 1.5rem;
-    color: #555;
-    margin-bottom: 5px;
-}
-
-/* Moldura e Imagem */
-.moldura-imagem {
-    width: 100%;
-    max-width: 300px; /* Requisito: Imagem principal e adequada */
-    background: #FFF;
-    border: 8px solid #FFF;
-    border-radius: 25px;
-    box-shadow: 0 8px 15px rgba(0,0,0,0.05);
-}
-
+/* Imagem da Palavra */
 #imagem-pergunta {
     width: 100%;
-    height: auto;
-    display: block;
-    border-radius: 20px;
+    height: 250px;
+    object-fit: contain;
+    filter: drop-shadow(0 10px 15px rgba(0,0,0,0.1));
 }
 
-/* ==========================================
-   4. A PALAVRA E O ALVO (MECÂNICA)
-   ========================================== */
-#container-palavra-completa {
+/* Área da Palavra (Prefixo, Alvo, Sufixo) */
+.area-palavra {
     display: flex;
-    flex-direction: row; /* Alinhamento horizontal das partes */
-    align-items: center;
+    flex-direction: row;
     justify-content: center;
-    gap: 8px;
-    font-size: 3.5rem; /* Fonte grande para leitura fácil */
+    align-items: center;
+    flex-wrap: wrap;
+    gap: 10px;
+    font-size: 3rem;
     font-weight: 700;
-    color: #333;
-    letter-spacing: 2px;
+    color: #4A4A4A;
+    text-transform: uppercase;
+    width: 100%;
 }
 
+/* Encaixe da Sílaba (Alvo) */
 #alvo-drop {
-    width: 90px;
-    height: 80px;
-    border: 5px dashed #BDBDBD; /* Bordas tracejadas */
-    border-radius: 18px;
+    min-width: 90px;
+    height: 90px;
+    border: 6px dashed #B0BEC5;
+    border-radius: 20px;
     display: flex;
     justify-content: center;
     align-items: center;
-    background: #F5F5F5;
-    color: #CCC;
-    transition: all 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+    color: #B0BEC5;
+    background-color: rgba(176, 190, 197, 0.1);
+    font-size: 3rem;
+    transition: all 0.3s ease;
+    padding: 0 10px;
 }
 
 /* Estados do Alvo */
-#alvo-drop.hover {
-    border-style: solid;
-    border-color: #2196F3;
-    box-shadow: 0 0 20px rgba(33, 150, 243, 0.5); /* Brilho azul no hover */
-    transform: scale(1.05);
-}
-
 #alvo-drop.acerto {
-    border: 5px solid #4CAF50;
+    border: 6px solid #4CAF50;
     background-color: #E8F5E9;
-    color: #2E7D32;
-    transform: scale(1.1); /* Escala 1.1 no acerto */
+    color: #4CAF50;
+    animation: bounce 0.6s cubic-bezier(0.28, 0.84, 0.42, 1) both;
 }
 
 #alvo-drop.erro {
-    border: 5px solid #F44336;
+    border: 6px solid #FF5252;
     background-color: #FFEBEE;
-    animation: tremer 0.5s; /* Animação de erro */
+    color: #FF5252;
+    animation: shake 0.5s cubic-bezier(.36,.07,.19,.97) both;
 }
 
-/* ==========================================
-   5. BOTÕES DE SÍLABAS (BLOCOS DE MONTAR)
-   ========================================== */
-#container-opcoes {
-    display: flex;
-    gap: 15px;
-    margin-top: 20px;
-    justify-content: center;
-    flex-wrap: wrap; /* Garante que caibam no celular */
-}
-
-.opcao-silaba {
-    min-width: 85px; /* Tamanho confortável para toque */
-    min-height: 85px;
-    background-color: #4FC3F7;
+/* Botão Ouvir */
+#btn-ouvir {
+    background-color: #FFB74D;
     color: white;
-    font-size: 2.2rem;
+    border: none;
+    padding: 15px 35px;
+    border-radius: 50px;
+    font-size: 1.4rem;
     font-weight: 700;
-    border-radius: 20px;
+    cursor: pointer;
+    box-shadow: 0 6px 0 #F57C00;
+    transition: transform 0.1s, box-shadow 0.1s;
+    width: 85%;
     display: flex;
     justify-content: center;
     align-items: center;
+    gap: 10px;
+}
+
+#btn-ouvir:active {
+    transform: translateY(6px);
+    box-shadow: 0 0px 0 #F57C00;
+}
+
+/* Container de Opções (Sílabas) */
+#container-opcoes {
+    display: flex;
+    justify-content: center;
+    flex-wrap: wrap;
+    gap: 15px;
+    width: 100%;
+}
+
+/* Botões de Sílabas (UX de Toque) */
+.opcao-silaba {
+    background-color: #29B6F6;
+    color: white;
+    border: none;
+    border-radius: 22px;
+    padding: 20px 30px;
+    font-size: 2.5rem;
+    font-weight: 700;
     cursor: pointer;
-    position: relative;
-    
-    /* Estilo Bloco 3D */
-    box-shadow: 0 8px 0 #0288D1;
-    transition: all 0.1s;
+    box-shadow: 0 10px 0 #0277BD;
+    transition: transform 0.1s, box-shadow 0.1s;
+    user-select: none;
+    min-width: 100px;
+    text-align: center;
+    text-transform: uppercase;
 }
 
 .opcao-silaba:active {
-    transform: translateY(4px);
-    box-shadow: 0 4px 0 #0288D1;
+    transform: translateY(10px);
+    box-shadow: 0 0px 0 #0277BD;
 }
 
-/* Cores diferentes para os blocos */
-.opcao-silaba:nth-child(even) { background-color: #FF8A65; box-shadow: 0 8px 0 #E64A19; }
-.opcao-silaba:nth-child(3n) { background-color: #BA68C8; box-shadow: 0 8px 0 #7B1FA2; }
-
-/* ==========================================
-   6. ANIMAÇÕES E RESPONSIVIDADE
-   ========================================== */
-@keyframes tremer {
-    0%, 100% { transform: translateX(0); }
-    20%, 60% { transform: translateX(-10px); }
-    40%, 80% { transform: translateX(10px); }
+/* Animações Keyframes */
+@keyframes shake {
+    10%, 90% { transform: translate3d(-5px, 0, 0); }
+    20%, 80% { transform: translate3d(10px, 0, 0); }
+    30%, 50%, 70% { transform: translate3d(-15px, 0, 0); }
+    40%, 60% { transform: translate3d(15px, 0, 0); }
 }
 
-/* Botão de Áudio */
-.btn-audio {
-    padding: 12px 25px;
-    font-size: 1.2rem;
-    font-weight: 600;
-    border: none;
-    border-radius: 50px;
-    background: #FFD54F;
-    color: #795548;
-    box-shadow: 0 5px 0 #FFA000;
-    cursor: pointer;
-    transition: 0.1s;
+@keyframes bounce {
+    0% { transform: scale(1); }
+    40% { transform: scale(1.2) translateY(-25px); }
+    60% { transform: scale(1.1) translateY(-10px); }
+    80% { transform: scale(1.05) translateY(-5px); }
+    100% { transform: scale(1) translateY(0); }
 }
 
-.btn-audio:active {
-    transform: translateY(3px);
-    box-shadow: 0 2px 0 #FFA000;
+/* Responsividade Extra para telas muito pequenas */
+@media (max-width: 360px) {
+    .area-palavra, #alvo-drop, .opcao-silaba {
+        font-size: 2.2rem;
+    }
+    #imagem-pergunta {
+        height: 200px;
+    }
+    .opcao-silaba {
+        padding: 15px 20px;
+        min-width: 80px;
+    }
 }
 
-/* Ajustes para telas muito pequenas */
-@media (max-width: 380px) {
-    #container-palavra-completa { font-size: 2.5rem; }
-    #alvo-drop { width: 75px; height: 65px; }
-    .opcao-silaba { min-width: 70px; min-height: 70px; font-size: 1.8rem; }
-}
