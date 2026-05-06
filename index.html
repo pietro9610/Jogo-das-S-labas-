@@ -2,173 +2,35 @@
 <html lang="pt-br">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
     <title>Jogo de Alfabetização - Arraste a Sílaba</title>
+    
     <link href="https://fonts.googleapis.com/css2?family=Fredoka:wght@400;600&display=swap" rel="stylesheet">
-    <style>
-        :root {
-            --cor-fundo: #e0f7fa;
-            --cor-primaria: #ff4081;
-            --cor-secundaria: #4caf50;
-            --cor-botao: #ffeb3b;
-            --cor-texto: #333;
-        }
-
-        body {
-            font-family: 'Fredoka', sans-serif;
-            background-color: var(--cor-fundo);
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            height: 100vh;
-            margin: 0;
-            overflow: hidden;
-            touch-action: manipulation;
-        }
-
-        #jogo-container {
-            background: white;
-            padding: 20px;
-            border-radius: 30px;
-            box-shadow: 0 10px 25px rgba(0,0,0,0.1);
-            text-align: center;
-            width: 90%;
-            max-width: 400px;
-        }
-
-        h1 {
-            color: var(--cor-primaria);
-            font-size: 24px;
-            margin-bottom: 15px;
-        }
-
-        #moldura-imagem {
-            position: relative;
-            background: #f9f9f9;
-            border: 4px solid var(--cor-primaria);
-            border-radius: 20px;
-            width: 200px;
-            height: 200px;
-            margin: 0 auto 15px;
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            overflow: hidden;
-        }
-
-        #imagem-pergunta {
-            max-width: 90%;
-            max-height: 90%;
-            border-radius: 15px;
-        }
-
-        #btn-ouvir {
-            background-color: var(--cor-botao);
-            border: none;
-            border-radius: 50%;
-            width: 60px;
-            height: 60px;
-            cursor: pointer;
-            font-size: 30px;
-            box-shadow: 0 4px 0 #d4c100;
-            transition: transform 0.1s;
-            margin-bottom: 20px;
-        }
-
-        #btn-ouvir:active {
-            transform: translateY(4px);
-            box-shadow: none;
-        }
-
-        #alvo-drop {
-            width: 120px;
-            height: 80px;
-            border: 3px dashed #ccc;
-            border-radius: 15px;
-            margin: 0 auto 30px;
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            font-size: 40px;
-            font-weight: bold;
-            color: #ddd;
-            background-color: #fafafa;
-            transition: all 0.3s;
-        }
-
-        #alvo-drop.hover {
-            background-color: #fce4ec;
-            border-color: var(--cor-primaria);
-        }
-
-        #alvo-drop.acerto {
-            background-color: #c8e6c9;
-            border-color: var(--cor-secundaria);
-            color: var(--cor-secundaria);
-            border-style: solid;
-        }
-
-        #alvo-drop.erro {
-            background-color: #ffcdd2;
-            border-color: #f44336;
-            animation: tremer 0.3s linear;
-        }
-
-        @keyframes tremer {
-            0% { transform: translateX(0); }
-            25% { transform: translateX(-10px); }
-            50% { transform: translateX(10px); }
-            75% { transform: translateX(-10px); }
-            100% { transform: translateX(0); }
-        }
-
-        #container-opcoes {
-            display: flex;
-            justify-content: space-around;
-            margin-top: 20px;
-        }
-
-        .opcao-silaba {
-            width: 80px;
-            height: 80px;
-            background-color: #2196f3;
-            color: white;
-            border-radius: 15px;
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            font-size: 32px;
-            font-weight: bold;
-            cursor: grab;
-            box-shadow: 0 6px 0 #1565c0;
-            user-select: none;
-            touch-action: none;
-        }
-
-        .opcao-silaba:active {
-            cursor: grabbing;
-        }
-    </style>
+    
+    <link rel="stylesheet" href="style.css">
+    
+    <script src="https://cdn.jsdelivr.net/npm/canvas-confetti@1.6.0/dist/confetti.browser.min.js"></script>
 </head>
-<body>
+<body class="cor-fundo-1"> <div id="jogo-container">
+        
+        <header>
+            <h1>QUAL A SÍLABA?</h1>
+            <button id="btn-ouvir" title="Ouvir som da palavra">🔊</button>
+        </header>
 
-    <div id="jogo-container">
-        <h1>QUAL A SÍLABA?</h1>
-
-        <div id="moldura-imagem">
-            <img id="imagem-pergunta" src="" alt="Imagem da palavra">
-        </div>
-
-        <button id="btn-ouvir" title="Ouvir som">🔊</button>
-
-        <div id="alvo-drop">?</div>
-
-        <div id="container-opcoes">
+        <main class="area-pergunta">
+            <div id="moldura-imagem">
+                <img id="imagem-pergunta" src="" alt="Imagem da palavra">
             </div>
+
+            <div id="alvo-drop">?</div>
+        </main>
+
+        <footer id="container-opcoes">
+            </footer>
+
     </div>
 
-    <script src="https://cdn.jsdelivr.net/npm/canvas-confetti@1.6.0/dist/confetti.browser.min.js"></script>
-    
     <script src="script.js"></script>
 
 </body>
