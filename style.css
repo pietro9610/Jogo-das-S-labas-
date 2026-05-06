@@ -1,162 +1,175 @@
-/* Importando uma fonte lúdica e moderna */
-@import url('https://fonts.googleapis.com/css2?family=Fredoka:wght@400;600&display=swap');
-
-:root {
-    --azul: #4db8ff;
-    --amarelo: #ffce00;
-    --rosa: #ff85a1;
-    --fundo: #f0f9ff;
-    --branco: #ffffff;
-    --texto: #2d3436;
-}
-
+/* 1. CONFIGURAÇÕES GERAIS */
 * {
     box-sizing: border-box;
     margin: 0;
     padding: 0;
+    -webkit-tap-highlight-color: transparent; /* Remove brilho azul ao tocar no celular */
 }
 
 body {
-    background-color: var(--fundo);
     font-family: 'Fredoka', sans-serif;
+    min-height: 100vh;
     display: flex;
     justify-content: center;
     align-items: center;
-    min-height: 100vh;
-    overflow-x: hidden;
+    transition: background-color 0.8s ease; /* Transição suave das cores de fundo */
+    overflow: hidden; /* Evita que a tela role no tablet */
+    touch-action: none; /* Bloqueia gestos do navegador para não bugar o arrasto */
 }
 
-#game-wrapper {
-    background-color: var(--branco);
-    width: 95%;
-    max-width: 600px;
+/* 2. SISTEMA DINÂMICO DE CORES PASTÉIS */
+.cor-fundo-1 { background-color: #FFB3BA; } /* Rosa Pastel */
+.cor-fundo-2 { background-color: #BAFFC9; } /* Verde Pastel */
+.cor-fundo-3 { background-color: #BAE1FF; } /* Azul Pastel */
+.cor-fundo-4 { background-color: #FFFFBA; } /* Amarelo Pastel */
+.cor-fundo-5 { background-color: #E0BBE4; } /* Roxo Pastel */
+.cor-fundo-6 { background-color: #F5E1DA; } /* Marrom Claro/Bege */
+
+/* 3. CONTAINER PRINCIPAL */
+#jogo-container {
+    width: 90%;
+    max-width: 500px;
+    background-color: rgba(255, 255, 255, 0.85); /* Fundo branco levemente transparente */
     padding: 30px;
     border-radius: 40px;
-    box-shadow: 0 15px 0 rgba(0, 0, 0, 0.05);
+    box-shadow: 0 20px 40px rgba(0, 0, 0, 0.1);
     text-align: center;
 }
 
-/* 1. Container da Imagem */
-#imagem-pergunta {
-    background-color: #f7f7f7;
-    border-radius: 30px;
-    padding: 20px;
-    margin-bottom: 30px;
-    border: 4px dashed #ddd;
-}
-
-#display-imagem {
-    max-width: 100%;
-    height: 200px;
-    object-fit: contain;
-    border-radius: 20px;
-}
-
-/* 2. Área de Destino (Dropzone) */
-#zona-destino {
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    gap: 15px;
-    margin-bottom: 40px;
-    font-size: 4rem;
-    font-weight: 600;
-    color: var(--texto);
+h1 {
+    font-size: 1.6rem;
+    color: #555;
+    margin-bottom: 20px;
     text-transform: uppercase;
 }
 
-#slot-vazio {
-    width: 100px;
-    height: 100px;
-    border: 5px dashed var(--azul);
-    border-radius: 20px;
+/* 4. BOTÃO DE OUVIR (3D) */
+#btn-ouvir {
+    background-color: #FFD93D;
+    border: none;
+    border-radius: 50%;
+    width: 75px;
+    height: 75px;
+    font-size: 35px;
+    cursor: pointer;
+    box-shadow: 0 8px 0 #D4B100; /* Sombra que dá volume */
+    transition: all 0.1s;
+    margin-bottom: 20px;
+}
+
+#btn-ouvir:active {
+    transform: translateY(4px); /* Botão afunda */
+    box-shadow: 0 4px 0 #D4B100;
+}
+
+/* 5. ÁREA DA IMAGEM */
+#moldura-imagem {
+    background: #FFF;
+    border: 5px solid #EEE;
+    border-radius: 30px;
+    width: 220px;
+    height: 200px;
+    margin: 0 auto 25px;
     display: flex;
     justify-content: center;
     align-items: center;
-    background-color: #e6f7ff;
-    color: var(--azul);
-    transition: all 0.3s ease;
+    overflow: hidden;
 }
 
-#slot-vazio.drag-over {
-    background-color: var(--amarelo);
+#imagem-pergunta {
+    max-width: 85%;
+    max-height: 85%;
+    object-fit: contain;
+}
+
+/* 6. O ALVO (DROPZONE) */
+#alvo-drop {
+    width: 140px;
+    height: 90px;
+    background-color: #f9f9f9;
+    border: 4px dashed #BBB;
+    border-radius: 20px;
+    margin: 0 auto 35px;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    font-size: 3.5rem;
+    font-weight: 600;
+    color: #CCC;
+    transition: all 0.3s;
+}
+
+/* PULO DO GATO: Hover Azul quando a sílaba está em cima */
+#alvo-drop.hover {
+    background-color: #E3F2FD;
+    border: 4px solid #4FC3F7;
+    color: #4FC3F7;
     transform: scale(1.1);
+}
+
+/* PULO DO GATO: Estilo de Acerto */
+#alvo-drop.acerto {
+    background-color: #C8E6C9;
+    border: 4px solid #4CAF50;
+    color: #2E7D32;
     border-style: solid;
 }
 
-/* 3. Botões de Sílaba (Efeito Chiclete/3D) */
-#opcoes-silabas {
-    display: grid;
-    grid-template-columns: repeat(2, 1fr);
-    gap: 20px;
+/* PULO DO GATO: Estilo de Erro com Shake */
+#alvo-drop.erro {
+    background-color: #FFCDD2;
+    border: 4px solid #F44336;
+    animation: shake 0.4s ease-in-out;
 }
 
-.btn-silaba {
-    cursor: grab;
-    padding: 20px;
-    font-size: 2rem;
-    font-weight: 600;
-    font-family: 'Fredoka', sans-serif;
-    border: none;
-    border-radius: 25px;
-    background-color: var(--azul);
+/* 7. OPÇÕES DE SÍLABAS (BOTÕES 3D) */
+#container-opcoes {
+    display: flex;
+    justify-content: center;
+    gap: 15px;
+}
+
+.opcao-silaba {
+    width: 95px;
+    height: 95px;
+    background-color: #4db8ff;
     color: white;
-    text-transform: uppercase;
-    
-    /* Efeito 3D */
-    box-shadow: 0 8px 0 #3a8ec4, inset 0 -4px 6px rgba(0,0,0,0.2);
-    transition: all 0.1s ease;
+    font-size: 2.2rem;
+    font-weight: 600;
+    border-radius: 20px;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    cursor: grab;
     user-select: none;
-    touch-action: none;
+    touch-action: none; /* Necessário para o script de touch funcionar */
+    
+    /* Efeito Chiclete 3D */
+    box-shadow: 0 8px 0 #2980b9;
+    transition: all 0.1s;
 }
 
-/* Cores variadas para os botões */
-.btn-silaba:nth-child(2) { background-color: var(--amarelo); box-shadow: 0 8px 0 #d4ad00, inset 0 -4px 6px rgba(0,0,0,0.2); }
-.btn-silaba:nth-child(3) { background-color: var(--rosa); box-shadow: 0 8px 0 #d65d7a, inset 0 -4px 6px rgba(0,0,0,0.2); }
-.btn-silaba:nth-child(4) { background-color: #a29bfe; box-shadow: 0 8px 0 #6c5ce7, inset 0 -4px 6px rgba(0,0,0,0.2); }
+/* Cores variadas para as sílabas */
+.opcao-silaba:nth-child(2) { background-color: #FF85A1; box-shadow: 0 8px 0 #D65D7A; }
+.opcao-silaba:nth-child(3) { background-color: #BA68C8; box-shadow: 0 8px 0 #8E24AA; }
 
-.btn-silaba:hover {
-    transform: translateY(-2px);
-    filter: brightness(1.1);
-}
-
-.btn-silaba:active {
+.opcao-silaba:active {
+    cursor: grabbing;
     transform: translateY(4px);
-    box-shadow: 0 4px 0 #3a8ec4;
+    box-shadow: 0 4px 0 #2980b9;
 }
 
-/* Estado enquanto arrasta */
-.btn-silaba.dragging {
-    opacity: 0.5;
-    transform: scale(0.9);
-}
-
-/* Animação de Erro (Shake) */
-.shake {
-    animation: shake 0.5s cubic-bezier(.36,.07,.19,.97) both;
-}
-
+/* ANIMAÇÃO DE SHAKE (TREMIDINHA) */
 @keyframes shake {
-    10%, 90% { transform: translate3d(-1px, 0, 0); }
-    20%, 80% { transform: translate3d(2px, 0, 0); }
-    30%, 50%, 70% { transform: translate3d(-4px, 0, 0); }
-    40%, 60% { transform: translate3d(4px, 0, 0); }
+    0%, 100% { transform: translateX(0); }
+    20%, 60% { transform: translateX(-10px); }
+    40%, 80% { transform: translateX(10px); }
 }
 
-/* Feedback Visual (Emoji) */
-#feedback-visual {
-    position: fixed;
-    top: 50%;
-    left: 50%;
-    transform: translate(-50%, -50%);
-    font-size: 8rem;
-    pointer-events: none;
-    z-index: 100;
-}
-
-/* Responsividade para telas menores */
-@media (max-width: 480px) {
-    #zona-destino { font-size: 2.5rem; }
-    #slot-vazio { width: 70px; height: 70px; }
-    .btn-silaba { font-size: 1.5rem; padding: 15px; }
+/* RESPONSIVIDADE PARA CELULARES PEQUENOS */
+@media (max-width: 400px) {
+    #jogo-container { padding: 20px; }
+    #moldura-imagem { width: 180px; height: 160px; }
+    .opcao-silaba { width: 80px; height: 80px; font-size: 1.8rem; }
+    #alvo-drop { width: 110px; height: 80px; }
 }
