@@ -76,36 +76,67 @@ h1 {
     overflow: hidden;
 }
 
+/* --- IMAGEM --- */
 #imagem-pergunta {
-    max-width: 85%;
-    max-height: 85%;
+    width: 100%;
+    max-width: 300px; /* Deixa a imagem grandona */
+    height: auto;
     object-fit: contain;
+    border-radius: 20px;
+    margin-bottom: 20px;
 }
 
-/* 6. O ALVO (DROPZONE) */
+/* --- CONTAINER DA PALAVRA QUEBRADA --- */
+.container-palavra-completa {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 10px;
+    font-size: 3.5rem;
+    font-weight: bold;
+    color: #444;
+    margin-bottom: 30px;
+}
+
+/* --- O ALVO (DENTRO DA PALAVRA) --- */
 #alvo-drop {
-    width: 140px;
-    height: 90px;
+    width: 100px;
+    height: 80px;
     background-color: #f9f9f9;
     border: 4px dashed #BBB;
-    border-radius: 20px;
-    margin: 0 auto 35px;
+    border-radius: 15px;
     display: flex;
     justify-content: center;
     align-items: center;
-    font-size: 3.5rem;
-    font-weight: 600;
     color: #CCC;
     transition: all 0.3s;
 }
 
-/* PULO DO GATO: Hover Azul quando a sílaba está em cima */
+/* --- EFEITOS (HOVER, ACERTO, ERRO) --- */
 #alvo-drop.hover {
     background-color: #E3F2FD;
     border: 4px solid #4FC3F7;
-    color: #4FC3F7;
     transform: scale(1.1);
 }
+
+#alvo-drop.acerto {
+    border: 4px solid #48bb78;
+    color: #48bb78;
+    background-color: #f0fff4;
+}
+
+#alvo-drop.erro {
+    border-color: #f56565;
+    background-color: #fff5f5;
+    animation: tremer 0.5s;
+}
+
+@keyframes tremer {
+    0%, 100% { transform: translateX(0); }
+    25% { transform: translateX(-10px); }
+    75% { transform: translateX(10px); }
+}
+
 
 /* PULO DO GATO: Estilo de Acerto */
 #alvo-drop.acerto {
