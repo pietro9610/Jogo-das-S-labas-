@@ -1,6 +1,6 @@
 // CONFIGURAÇÕES DE PASTAS (Caminhos do seu GitHub)
 const PATH_IMG = "imagens/";
-const PATH_SISTEMA = "audio/sistema/";
+const PATH_SISTEMA = "audio/Sistema/"; // <-- CORRIGIDO COM "S" MAIÚSCULO
 const PATH_PALAVRAS = "audio/palavras/";
 const PATH_SILABAS = "audio/silabas/";
 
@@ -128,13 +128,8 @@ function gerarOpcoes() {
         div.innerText = silaba;
         
         div.onclick = () => {
-            // Se for a certa, toca o áudio específico (aberto/fechado)
-            if (silaba === atual.s) {
-                new Audio(`${PATH_SILABAS}${atual.a}`).play();
-            } else {
-                // Se for errada, toca o som padrão daquela sílaba
-                new Audio(`${PATH_SILABAS}${silaba.toLowerCase()}.mp3`).play();
-            }
+            // O áudio foi removido daqui para não tocar duplicado. 
+            // Agora a função verificarResposta cuida de todo o áudio!
             verificarResposta(silaba);
         };
         container.appendChild(div);
@@ -150,31 +145,36 @@ function verificarResposta(escolha) {
         
         confetti();
 
-        // Toca o áudio da sílaba selecionada
-        new Audio(`${PATH_SILABAS}${escolha.toLowerCase()}.mp3`).play();
+        // 1. Toca o áudio da sílaba correta específica
+        const audioSilaba = new Audio(`${PATH_SILABAS}${atual.a}`);
+        
+        // 2. Quando a sílaba terminar, toca as palmas
+        audioSilaba.onended = () => {
+            const somPalmas = new Audio(`${PATH_SISTEMA}palmas.mp3`);
+            somPalmas.play();
 
-        // Toca o áudio de palmas
-        const somPalmas = new Audio(`${PATH_SISTEMA}palmas.mp3`);
-        somPalmas.play();
-
-        // Só passa para a próxima fase quando o áudio das palmas terminar
-        somPalmas.onended = () => {
-            fase++;
-            carregarFase();
+            // 3. Quando as palmas terminarem, vai para a próxima fase
+            somPalmas.onended = () => {
+                fase++;
+                carregarFase();
+            };
         };
+
+        // Inicia a sequência tocando a sílaba
+        audioSilaba.play();
 
     } else {
         alvo.className = "erro";
 
-        // Vibração do celular
+        // Vibração do celular (Haptic Feedback)
         if (navigator.vibrate) {
             navigator.vibrate(200);
         }
 
-        // Toca o áudio da sílaba selecionada (mesmo errada)
+        // Toca o áudio padrão da sílaba errada clicada
         new Audio(`${PATH_SILABAS}${escolha.toLowerCase()}.mp3`).play();
 
-        // Remove a classe de erro (tremida) após 1 segundo
+        // Remove a classe de erro após 1 segundo
         setTimeout(() => {
             alvo.className = "";
         }, 1000);
