@@ -1,11 +1,10 @@
 // CONFIGURAÇÕES DE PASTAS (Caminhos do seu GitHub)
 const PATH_IMG = "imagens/";
-const PATH_SISTEMA = "audio/Sistema/"; // <-- CORRIGIDO COM "S" MAIÚSCULO
+const PATH_SISTEMA = "audio/Sistema/"; // S Maiúsculo corrigido
 const PATH_PALAVRAS = "audio/palavras/";
 const PATH_SILABAS = "audio/silabas/";
 
-// BANCO DE DADOS COMPLETO (60 PALAVRAS)
-// p: Palavra, s: Sílaba certa, a: Áudio específico da sílaba
+// BANCO DE DADOS (60 PALAVRAS ORIGINAIS)
 const bancoDePalavras = [
     { p: "Bebê", s: "BE", a: "be_fechado.mp3" },
     { p: "Pato", s: "PA", a: "pa.mp3" },
@@ -73,27 +72,46 @@ let fase = 0;
 let atual;
 let embaralhado = [];
 
-// FUNÇÃO PARA LIMPAR ACENTOS DOS NOMES DE ARQUIVOS
 const normalizar = (texto) => texto.toLowerCase().normalize("NFD").replace(/[\u0300-\u036f]/g, "");
+
+// Função para testar se o arquivo existe antes de carregar a fase
+async function verificarArquivoExiste(url) {
+    try {
+        const response = await fetch(url, { method: 'HEAD' });
+        return response.ok;
+    } catch (e) {
+        return false;
+    }
+}
 
 function iniciar() {
     embaralhado = [...bancoDePalavras].sort(() => Math.random() - 0.5);
+    fase = 0;
     carregarFase();
 }
 
-function carregarFase() {
+async function carregarFase() {
     if (fase >= embaralhado.length) {
-        alert("Incrível! Você completou todas as 60 palavras!");
+        alert("Incrível! Você completou todas as palavras disponíveis!");
         fase = 0; iniciar(); return;
     }
 
     atual = embaralhado[fase];
     const nomeLimpo = normalizar(atual.p);
+    const caminhoAudioSilaba = `${PATH_SILABAS}${atual.a}`;
 
-    // Carrega Imagem
+    // BLINDAGEM: Verifica se o áudio da sílaba existe
+    const existe = await verificarArquivoExiste(caminhoAudioSilaba);
+    
+    if (!existe) {
+        console.warn(`Pulando "${atual.p}": Áudio ${atual.a} não encontrado.`);
+        fase++;
+        carregarFase();
+        return;
+    }
+
+    // Carrega interface
     document.getElementById("imagem-pergunta").src = `${PATH_IMG}${nomeLimpo}.png`;
-
-    // Monta a palavra com o espaço vazio
     const partes = atual.p.toUpperCase().split(atual.s.toUpperCase());
     document.getElementById("prefixo-palavra").innerText = partes[0] || "";
     document.getElementById("sufixo-palavra").innerText = partes[1] || "";
@@ -102,14 +120,11 @@ function carregarFase() {
     alvo.innerText = "?";
     alvo.className = "";
 
-    // Botão de ouvir a palavra inteira
     document.getElementById("btn-ouvir").onclick = () => {
-        new Audio(`${PATH_PALAVRAS}${nomeLimpo}.mp3`).play();
+        new Audio(`${PATH_PALAVRAS}${nomeLimpo}.mp3`).play().catch(e => console.log("Erro ao tocar palavra"));
     };
 
-    // Troca cor de fundo
     document.body.className = `cor-fundo-${(fase % 6) + 1}`;
-
     gerarOpcoes();
 }
 
@@ -117,8 +132,7 @@ function gerarOpcoes() {
     const container = document.getElementById("container-opcoes");
     container.innerHTML = "";
     
-    // Lista de sílabas para distrair (erradas)
-    const erradas = ["BA", "MA", "PA", "CA", "LA", "DA"].filter(x => x !== atual.s);
+    const erradas = ["BA", "MA", "PA", "CA", "LA", "DA", "BO", "FE"].filter(x => x !== atual.s);
     let opcoes = [atual.s, ...erradas.sort(() => 0.5 - Math.random()).slice(0, 2)];
     opcoes = opcoes.sort(() => Math.random() - 0.5);
 
@@ -126,58 +140,41 @@ function gerarOpcoes() {
         const div = document.createElement("div");
         div.className = "opcao-silaba";
         div.innerText = silaba;
-        
-        div.onclick = () => {
-            // O áudio foi removido daqui para não tocar duplicado. 
-            // Agora a função verificarResposta cuida de todo o áudio!
-            verificarResposta(silaba);
-        };
+        div.onclick = () => verificarResposta(silaba);
         container.appendChild(div);
     });
 }
 
-function verificarResposta(escolha) {
+async function verificarResposta(escolha) {
     const alvo = document.getElementById("alvo-drop");
 
     if (escolha === atual.s) {
         alvo.innerText = escolha;
         alvo.className = "acerto";
-        
-        confetti();
+        if (typeof confetti === 'function') confetti();
 
-        // 1. Toca o áudio da sílaba correta específica
-        const audioSilaba = new Audio(`${PATH_SILABAS}${atual.a}`);
-        
-        // 2. Quando a sílaba terminar, toca as palmas
-        audioSilaba.onended = () => {
-            const somPalmas = new Audio(`${PATH_SISTEMA}palmas.mp3`);
-            somPalmas.play();
-
-            // 3. Quando as palmas terminarem, vai para a próxima fase
-            somPalmas.onended = () => {
-                fase++;
-                carregarFase();
+        // Sequência: Sílaba -> Palmas -> Próxima Fase
+        try {
+            const audioSilaba = new Audio(`${PATH_SILABAS}${atual.a}`);
+            audioSilaba.onended = () => {
+                const somPalmas = new Audio(`${PATH_SISTEMA}palmas.mp3`);
+                somPalmas.onended = () => { fase++; carregarFase(); };
+                somPalmas.play().catch(() => { fase++; carregarFase(); });
             };
-        };
-
-        // Inicia a sequência tocando a sílaba
-        audioSilaba.play();
+            audioSilaba.play();
+        } catch (e) {
+            fase++; carregarFase();
+        }
 
     } else {
         alvo.className = "erro";
+        if (navigator.vibrate) navigator.vibrate(200);
 
-        // Vibração do celular (Haptic Feedback)
-        if (navigator.vibrate) {
-            navigator.vibrate(200);
-        }
+        // Sílaba errada em minúsculo. Se não existir, o erro é silenciado.
+        const somErro = new Audio(`${PATH_SILABAS}${escolha.toLowerCase()}.mp3`);
+        somErro.play().catch(e => console.log("Áudio de erro não encontrado, ignorando..."));
 
-        // Toca o áudio padrão da sílaba errada clicada
-        new Audio(`${PATH_SILABAS}${escolha.toLowerCase()}.mp3`).play();
-
-        // Remove a classe de erro após 1 segundo
-        setTimeout(() => {
-            alvo.className = "";
-        }, 1000);
+        setTimeout(() => { alvo.className = ""; }, 1000);
     }
 }
 
