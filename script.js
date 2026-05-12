@@ -141,28 +141,40 @@ function gerarOpcoes() {
     });
 }
 
-function verificarResposta(escolhida) {
+function verificarResposta(escolha) {
     const alvo = document.getElementById("alvo-drop");
-    
-    if (escolhida === atual.s) {
-        alvo.innerText = escolhida;
+
+    if (escolha === atual.s) {
+        alvo.innerText = escolha;
         alvo.className = "acerto";
         
-        // Feedback de Vitória
         confetti();
-        new Audio(`${PATH_SISTEMA}acerto${Math.floor(Math.random() * 3) + 1}.mp3`).play();
-        new Audio(`${PATH_SISTEMA}palmas.mp3`).play();
 
-        setTimeout(() => {
+        // Toca o áudio da sílaba selecionada
+        new Audio(`${PATH_SILABAS}${escolha.toLowerCase()}.mp3`).play();
+
+        // Toca o áudio de palmas
+        const somPalmas = new Audio(`${PATH_SISTEMA}palmas.mp3`);
+        somPalmas.play();
+
+        // Só passa para a próxima fase quando o áudio das palmas terminar
+        somPalmas.onended = () => {
             fase++;
             carregarFase();
-        }, 2500);
+        };
+
     } else {
         alvo.className = "erro";
-        // Feedback de Erro
-        new Audio(`${PATH_SISTEMA}boing_boing.mp3`).play();
-        new Audio(`${PATH_SISTEMA}erro${Math.floor(Math.random() * 3) + 1}.mp3`).play();
-        
+
+        // Vibração do celular
+        if (navigator.vibrate) {
+            navigator.vibrate(200);
+        }
+
+        // Toca o áudio da sílaba selecionada (mesmo errada)
+        new Audio(`${PATH_SILABAS}${escolha.toLowerCase()}.mp3`).play();
+
+        // Remove a classe de erro (tremida) após 1 segundo
         setTimeout(() => {
             alvo.className = "";
         }, 1000);
@@ -170,4 +182,3 @@ function verificarResposta(escolhida) {
 }
 
 window.onload = iniciar;
-
